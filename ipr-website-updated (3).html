@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPR Shield — Protect Your Ideas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6f9;
+  --surface: #eef0f5;
+  --card: #ffffff;
+  --border: rgba(0,0,0,0.09);
+  --text: #1a1f2e;
+  --muted: #64748b;
+  --lime: #1e6e2e;
+  --cyan: #0369a1;
+  --pink: #be185d;
+  --orange: #c2410c;
+  --violet: #6d28d9;
+  --white: #1a1f2e;
+  --accent: #16a34a;
+  --accent-bg: rgba(22,163,74,0.08);
+  --accent-border: rgba(22,163,74,0.2);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; cursor: none; }
+@media (pointer: coarse) { body { cursor: auto; } #cursor, #cursor-ring { display: none !important; } }
+
+#cursor { width: 12px; height: 12px; background: #16a34a; border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease, background 0.2s; mix-blend-mode: multiply; }
+#cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(22,163,74,0.35); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: all 0.08s ease; }
+
+/* Clean light layered background */
+body::before { content: ''; position: fixed; inset: 0; background:
+  radial-gradient(ellipse 80% 60% at 70% -10%, rgba(22,163,74,0.05) 0%, transparent 60%),
+  radial-gradient(ellipse 60% 50% at -10% 80%, rgba(3,105,161,0.04) 0%, transparent 55%),
+  radial-gradient(ellipse 50% 40% at 100% 100%, rgba(109,40,217,0.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 0; }
+body::after { content: ''; position: fixed; inset: 0; background: transparent; pointer-events: none; z-index: 0; }
+#starfield { display: none; }
+
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; background: rgba(244,246,249,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+.logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; color: var(--white); }
+.logo span { color: var(--lime); }
+.nav-pills { display: flex; gap: 0.3rem; list-style: none; }
+.nav-pills a { display: block; padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: all 0.2s; letter-spacing: 0.04em; }
+.nav-pills a:hover { background: var(--accent-bg); color: var(--lime); }
+.nav-menu-btn { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 0.45rem 0.7rem; cursor: pointer; color: var(--muted); font-size: 1.1rem; line-height: 1; transition: all 0.2s; }
+.nav-menu-btn:hover { border-color: var(--lime); color: var(--lime); }
+.mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(244,246,249,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 499; padding: 1rem 1.5rem; flex-direction: column; gap: 0.3rem; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { display: block; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: all 0.2s; letter-spacing: 0.04em; }
+.mobile-menu a:hover { background: rgba(200,255,0,0.08); color: var(--lime); }
+
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 7rem 3rem 4rem; position: relative; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; pointer-events: none; }
+.orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.12; animation: orb-float 8s ease-in-out infinite; }
+.orb-1 { width: 600px; height: 600px; background: #16a34a; top: -200px; right: -100px; }
+.orb-2 { width: 400px; height: 400px; background: #0369a1; bottom: -100px; left: 10%; animation-delay: 3s; }
+.orb-3 { width: 300px; height: 300px; background: #be185d; top: 30%; left: -100px; animation-delay: 5s; }
+@keyframes orb-float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-40px) scale(1.05); } }
+
+.hero-tag { display: inline-flex; align-items: center; gap: 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--lime); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 2rem; opacity: 0; animation: rise 0.8s ease 0.2s forwards; }
+.hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--lime); }
+
+.hero-title { font-family: 'Instrument Serif', serif; font-size: clamp(3.5rem, 9vw, 8rem); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 2rem; opacity: 0; animation: rise 0.8s ease 0.4s forwards; }
+.hero-title .line1 { display: block; color: var(--text); }
+.hero-title .line2 { display: block; color: transparent; -webkit-text-stroke: 1px rgba(22,163,74,0.5); font-style: italic; }
+.hero-title .line3 { display: block; color: var(--lime); }
+
+.hero-desc { font-size: 1rem; line-height: 1.7; color: var(--muted); max-width: 480px; margin-bottom: 3rem; font-weight: 400; opacity: 0; animation: rise 0.8s ease 0.6s forwards; }
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: rise 0.8s ease 0.8s forwards; }
+
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; border-radius: 100px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; border: none; cursor: pointer; transition: all 0.25s; }
+.btn-lime { background: var(--lime); color: #fff; }
+.btn-lime:hover { background: #166534; transform: translateY(-2px) scale(1.02); box-shadow: 0 0 30px rgba(22,163,74,0.25); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: rgba(0,0,0,0.2); background: rgba(0,0,0,0.04); }
+
+.hero-numbers { position: absolute; bottom: 3rem; left: 3rem; display: flex; gap: 3rem; opacity: 0; animation: rise 0.8s ease 1s forwards; }
+.hero-num-val { font-family: 'Instrument Serif', serif; font-size: 2.5rem; color: var(--text); line-height: 1; }
+.hero-num-val span { color: var(--lime); }
+.hero-num-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.3rem; }
+
+.hero-scroll { position: absolute; bottom: 3rem; right: 3rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; opacity: 0; animation: rise 1s ease 1.2s forwards; }
+.scroll-line { width: 1px; height: 60px; background: linear-gradient(to bottom, var(--lime), transparent); animation: scroll-pulse 2s ease-in-out infinite; }
+@keyframes scroll-pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+.scroll-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--muted); writing-mode: vertical-lr; text-transform: uppercase; }
+
+section { padding: 6rem 3rem; position: relative; }
+.s-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
+.s-tag::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--lime); }
+h2 { font-family: 'Instrument Serif', serif; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1rem; }
+.s-lead { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 500px; margin-bottom: 3.5rem; font-weight: 400; }
+
+/* QUIZ */
+.quiz-section { background: var(--surface); border-top: 1px solid var(--border); }
+.quiz-outer { max-width: 680px; margin: 0 auto; }
+.quiz-shell { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; position: relative; }
+.quiz-shell::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--lime), var(--cyan), var(--pink)); }
+.quiz-top { padding: 1.8rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.quiz-top-left { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+.quiz-top-right { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+.quiz-bar-wrap { padding: 1.5rem 2rem 0; display: flex; gap: 6px; }
+.qbar { flex: 1; height: 3px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+.qbar .fill { height: 100%; width: 0%; background: var(--lime); border-radius: 10px; transition: width 0.4s ease; }
+.qbar.done .fill { width: 100%; }
+.qbar.active .fill { width: 100%; background: var(--cyan); animation: pulse-bar 1.5s ease-in-out infinite; }
+@keyframes pulse-bar { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.quiz-inner { padding: 2rem; }
+.quiz-question { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 1.5rem; display: none; color: var(--text); }
+.quiz-question.active { display: block; animation: rise 0.4s ease; }
+.quiz-opts { display: flex; flex-direction: column; gap: 0.6rem; }
+.qopt { background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 500; color: var(--muted); cursor: pointer; text-align: left; font-family: 'Syne', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 0.8rem; }
+.qopt .opt-icon { font-size: 1.1rem; flex-shrink: 0; }
+.qopt:hover { border-color: rgba(22,163,74,0.3); color: var(--text); background: var(--accent-bg); transform: translateX(4px); }
+.qopt.sel { border-color: var(--lime); background: var(--accent-bg); color: var(--lime); }
+.quiz-footer { padding: 1.2rem 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.qfooter-hint { font-size: 0.75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.qbtn { padding: 0.65rem 1.6rem; border-radius: 100px; font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; }
+.qbtn-go { background: var(--lime); color: #fff; }
+.qbtn-go:hover { background: #166534; box-shadow: 0 0 20px rgba(22,163,74,0.25); }
+.qbtn-go:disabled { opacity: 0.25; }
+.qbtn-reset { background: rgba(0,0,0,0.05); color: var(--muted); }
+.qbtn-reset:hover { background: rgba(0,0,0,0.09); color: var(--text); }
+.quiz-result-panel { display: none; padding: 2rem; text-align: center; }
+.quiz-result-panel.show { display: block; animation: rise 0.5s ease; }
+.qr-emoji { font-size: 4rem; margin-bottom: 1rem; display: block; }
+.qr-title { font-family: 'Instrument Serif', serif; font-size: 2rem; color: var(--lime); margin-bottom: 0.8rem; }
+.qr-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto 1.5rem; }
+.qr-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.qr-pill { padding: 0.35rem 0.9rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em; }
+.pill-lime { background: rgba(22,163,74,0.1); color: var(--lime); border: 1px solid rgba(22,163,74,0.25); }
+.pill-cyan { background: rgba(3,105,161,0.08); color: var(--cyan); border: 1px solid rgba(3,105,161,0.2); }
+
+/* IP COMPARE GRID (replaces solar system) */
+.compare-section { background: transparent; overflow: hidden; }
+.ip-compare-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; width: 100%; margin-top: 1rem; }
+.ip-cg-card { border-radius: 18px; border: 1px solid var(--border); background: var(--card); overflow: hidden; transition: all 0.3s; position: relative; cursor: default; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+.ip-cg-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
+.ip-cg-card.cg-tm::before { background:linear-gradient(90deg,#16a34a,#4ade80); }
+.ip-cg-card.cg-cr::before { background:linear-gradient(90deg,#0369a1,#38bdf8); }
+.ip-cg-card.cg-pt::before { background:linear-gradient(90deg,#be185d,#f472b6); }
+.ip-cg-card.cg-gi::before { background:linear-gradient(90deg,#6d28d9,#a78bfa); }
+.ip-cg-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
+.ip-cg-card.cg-tm:hover { border-color:rgba(22,163,74,0.3); }
+.ip-cg-card.cg-cr:hover { border-color:rgba(3,105,161,0.3); }
+.ip-cg-card.cg-pt:hover { border-color:rgba(190,24,93,0.3); }
+.ip-cg-card.cg-gi:hover { border-color:rgba(109,40,217,0.3); }
+.cg-head { padding:1.4rem 1.4rem 1rem; display:flex; align-items:center; gap:1rem; border-bottom:1px solid var(--border); }
+.cg-icon { width:44px; height:44px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; }
+.cg-tm .cg-icon { background:rgba(22,163,74,0.1); color:#16a34a; }
+.cg-cr .cg-icon { background:rgba(3,105,161,0.1); color:#0369a1; }
+.cg-pt .cg-icon { background:rgba(190,24,93,0.1); color:#be185d; }
+.cg-gi .cg-icon { background:rgba(109,40,217,0.1); color:#6d28d9; }
+.cg-name { font-size:1rem; font-weight:700; color:var(--text); }
+.cg-act { font-size:0.65rem; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-top:0.15rem; }
+.cg-body { padding:1rem 1.4rem 1.4rem; }
+.cg-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.5rem 0; border-bottom:1px solid rgba(0,0,0,0.05); gap:0.8rem; }
+.cg-row:last-child { border-bottom:none; }
+.cg-k { font-size:0.68rem; color:var(--muted); font-family:'JetBrains Mono',monospace; flex-shrink:0; }
+.cg-v { font-size:0.76rem; font-weight:600; color:var(--text); text-align:right; }
+
+/* FILING */
+.filing-section { background: var(--surface); border-top: 1px solid var(--border); }
+.filing-layout { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; }
+.ftabs-col { display: flex; flex-direction: column; gap: 0.4rem; position: sticky; top: 6rem; height: fit-content; }
+.ftab { padding: 0.8rem 1.2rem; border-radius: 10px; font-size: 0.82rem; font-weight: 700; color: var(--muted); background: none; border: 1px solid transparent; cursor: pointer; font-family: 'Syne', sans-serif; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 0.7rem; }
+.ftab:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+.ftab.active { background: rgba(200,255,0,0.08); color: var(--lime); border-color: rgba(200,255,0,0.2); }
+.fsteps { display: none; }
+.fsteps.active { display: flex; flex-direction: column; }
+.fstep { display: grid; grid-template-columns: 56px 1fr; position: relative; }
+.fstep:not(:last-child)::before { content: ''; position: absolute; left: 27px; top: 56px; bottom: 0; width: 2px; background: linear-gradient(to bottom, rgba(200,255,0,0.3), transparent); }
+.fstep-num { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-bg); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-family: 'Instrument Serif', serif; font-size: 1.3rem; color: var(--lime); flex-shrink: 0; position: relative; z-index: 1; }
+.fstep-content { padding: 0.5rem 0 2.5rem 1.5rem; }
+.fstep-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+.fstep-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.65; font-weight: 400; }
+.fstep-desc em { color: rgba(0,229,255,0.85); font-style: italic; font-weight: 500; }
+.fstep-badge { display: inline-block; margin-top: 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--cyan); background: rgba(3,105,161,0.07); border: 1px solid rgba(3,105,161,0.15); padding: 0.25rem 0.6rem; border-radius: 4px; letter-spacing: 0.06em; }
+
+/* MISTAKES */
+.mistakes-section { background: var(--bg); }
+.mistakes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.mk-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; position: relative; overflow: hidden; transition: all 0.25s; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+.mk-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--pink), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+.mk-card:hover { border-color: rgba(190,24,93,0.2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(190,24,93,0.07); }
+.mk-card:hover::before { transform: scaleX(1); }
+.mk-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--pink); letter-spacing: 0.15em; margin-bottom: 0.6rem; text-transform: uppercase; }
+.mk-title { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+.mk-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; font-weight: 400; }
+.mk-fix { margin-top: 0.9rem; font-size: 0.8rem; font-weight: 600; color: var(--lime); display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.6rem 0.8rem; background: var(--accent-bg); border-radius: 8px; border: 1px solid var(--accent-border); }
+.mk-fix::before { content: '→'; flex-shrink: 0; }
+
+/* CASES */
+.cases-section { background: var(--surface); border-top: 1px solid var(--border); }
+.cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.2rem; }
+.case-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: all 0.25s; cursor: default; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+.case-card:hover { border-color: rgba(109,40,217,0.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(109,40,217,0.08); }
+.case-top { padding: 1rem 1.4rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(109,40,217,0.03); }
+.case-type-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--violet); }
+.case-yr { font-size: 0.72rem; color: var(--muted); }
+.case-body { padding: 1.4rem; }
+.case-name { font-family: 'Instrument Serif', serif; font-size: 1rem; color: var(--text); margin-bottom: 0.6rem; line-height: 1.3; }
+.case-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; font-weight: 400; }
+.case-lesson { font-size: 0.78rem; font-weight: 600; color: var(--violet); background: rgba(109,40,217,0.06); border: 1px solid rgba(109,40,217,0.15); border-radius: 8px; padding: 0.65rem 0.8rem; line-height: 1.5; }
+
+/* STARTUP */
+.startup-section { background: var(--bg); }
+.startup-banner { background: linear-gradient(135deg, rgba(22,163,74,0.06) 0%, rgba(3,105,161,0.04) 100%); border: 1px solid var(--accent-border); border-radius: 20px; padding: 3rem; margin-bottom: 4rem; position: relative; overflow: hidden; }
+.startup-banner::before { content: 'IP'; position: absolute; right: -1rem; bottom: -2rem; font-family: 'Instrument Serif', serif; font-size: 14rem; color: rgba(22,163,74,0.04); line-height: 1; pointer-events: none; }
+.sb-title { font-family: 'Instrument Serif', serif; font-size: clamp(1.8rem, 3vw, 2.8rem); color: var(--text); margin-bottom: 0.8rem; }
+.sb-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.7; max-width: 600px; font-weight: 400; }
+
+.matrix-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 3rem; box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
+.matrix-header { display: grid; grid-template-columns: 2fr 1fr 1fr; padding: 1rem 1.5rem; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.matrix-row { display: grid; grid-template-columns: 2fr 1fr 1fr; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); align-items: center; transition: background 0.15s; }
+.matrix-row:last-child { border-bottom: none; }
+.matrix-row:hover { background: rgba(0,0,0,0.02); }
+.mr-scenario { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.mr-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; font-weight: 400; }
+.badge { font-size: 0.78rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.b-lime { color: var(--lime); }
+.b-cyan { color: var(--cyan); }
+.b-orange { color: var(--orange); }
+.b-muted { color: var(--muted); font-size: 0.72rem; font-weight: 400; }
+
+.license-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 3rem; }
+.lc-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; transition: all 0.25s; position: relative; overflow: hidden; }
+.lc-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+.lc-1::after { background: var(--orange); }
+.lc-2::after { background: var(--cyan); }
+.lc-3::after { background: var(--violet); }
+.lc-card:hover::after { transform: scaleX(1); }
+.lc-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-3px); }
+.lc-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
+.lc-name { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+.lc-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; font-weight: 400; }
+.lc-best { margin-top: 0.8rem; font-size: 0.78rem; font-weight: 600; }
+.lc-1 .lc-best { color: var(--orange); }
+.lc-2 .lc-best { color: var(--cyan); }
+.lc-3 .lc-best { color: var(--violet); }
+
+.sm-items { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 3rem; }
+.sm-item { display: flex; gap: 1.2rem; align-items: flex-start; padding: 1rem 1.3rem; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+.sm-item:hover { border-color: rgba(194,65,12,0.25); background: rgba(194,65,12,0.02); }
+.sm-e { font-size: 1.4rem; flex-shrink: 0; padding-top: 0.1rem; }
+.sm-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+.sm-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.55; font-weight: 400; }
+
+/* FAQ */
+.faq-section { background: var(--surface); border-top: 1px solid var(--border); }
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 1000px; }
+.faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+.faq-item:hover { border-color: rgba(22,163,74,0.25); }
+.faq-item.open { border-color: rgba(22,163,74,0.35); }
+.faq-q { width: 100%; background: none; border: none; padding: 1.3rem 1.4rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--text); text-align: left; transition: color 0.2s; }
+.faq-q:hover { color: var(--lime); }
+.faq-item.open .faq-q { color: var(--lime); }
+.faq-chevron { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.65rem; color: var(--muted); transition: all 0.3s; margin-top: 0.1rem; }
+.faq-item.open .faq-chevron { background: var(--accent-bg); border-color: var(--accent-border); color: var(--lime); transform: rotate(180deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
+.faq-a-inner { padding: 0 1.4rem 1.3rem; font-size: 0.83rem; color: var(--muted); line-height: 1.75; font-weight: 400; border-top: 1px solid var(--border); padding-top: 1rem; }
+.faq-a-inner strong { color: var(--cyan); font-weight: 600; }
+.faq-item.open .faq-a { max-height: 400px; }
+
+/* FOOTER */
+footer { background: var(--surface); border-top: 1px solid var(--border); }
+.footer-main { padding: 4rem 3rem 3rem; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; }
+.footer-brand-col {}
+.footer-logo-big { font-family: 'Instrument Serif', serif; font-size: 2.6rem; color: var(--text); letter-spacing: -0.02em; line-height: 1; margin-bottom: 0.8rem; }
+.footer-logo-big span { color: var(--lime); }
+.footer-note { font-size: 0.82rem; color: var(--muted); line-height: 1.75; max-width: 320px; font-weight: 400; margin-bottom: 1.5rem; }
+.footer-student { padding-top: 1.2rem; border-top: 1px solid var(--border); }
+.footer-student-name { font-family: 'Instrument Serif', serif; font-size: 1.05rem; color: var(--text); margin-bottom: 0.25rem; }
+.footer-student-name span { color: var(--lime); }
+.footer-student-reg { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; }
+.footer-col-title { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lime); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+.footer-col-title::after { content: ''; flex: 1; height: 1px; background: rgba(200,255,0,0.2); }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+.footer-links a { font-size: 0.82rem; color: var(--muted); text-decoration: none; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+.footer-links a::before { content: '→'; font-size: 0.7rem; color: transparent; transition: all 0.2s; }
+.footer-links a:hover { color: var(--text); padding-left: 0.3rem; }
+.footer-links a:hover::before { color: var(--lime); }
+.footer-bottom { padding: 1.5rem 3rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.footer-bottom-left { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; line-height: 1.6; }
+.footer-bottom-right { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.04em; text-align: right; line-height: 1.6; }
+.footer-bottom-right span { color: var(--lime); }
+
+.hero-num-item { display: flex; flex-direction: column; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-pills { display: none; }
+  .nav-menu-btn { display: block; }
+  section { padding: 4rem 1.5rem; }
+  .hero { padding: 7rem 1.5rem 5rem; }
+  .hero-numbers, .hero-scroll { display: none; }
+  .ip-cards, .license-cards { grid-template-columns: 1fr; }
+  .filing-layout { grid-template-columns: 1fr; }
+  .ftabs-col { flex-direction: row; flex-wrap: wrap; position: static; }
+  .ftab { flex: 1 1 auto; min-width: 120px; justify-content: center; text-align: center; }
+  .mistakes-grid { grid-template-columns: 1fr; }
+  .matrix-wrap { overflow-x: auto; }
+  .matrix-header, .matrix-row { font-size: 0.72rem; min-width: 500px; }
+  .faq-grid { grid-template-columns: 1fr; }
+  .ip-compare-grid { grid-template-columns: 1fr 1fr; }
+  .footer-course { text-align: left; }
+  .footer-main { grid-template-columns: 1fr 1fr; padding: 3rem 1.5rem 2rem; gap: 2rem; }
+  .footer-bottom { padding: 1.2rem 1.5rem; }
+  .cases-grid { grid-template-columns: 1fr; }
+  .btn { width: 100%; justify-content: center; }
+  .hero-actions { flex-direction: column; width: 100%; max-width: 320px; }
+  .hero-title { font-size: clamp(2.8rem, 12vw, 5rem); }
+  .startup-banner { padding: 2rem 1.5rem; }
+  .qbtn { width: auto; min-width: 120px; }
+  .quiz-footer { flex-wrap: wrap; gap: 0.5rem; }
+}
+
+@media (max-width: 480px) {
+  section { padding: 3rem 1rem; }
+  .hero { padding: 6rem 1rem 4rem; }
+  .filing-layout { gap: 1rem; }
+  .ftab { font-size: 0.75rem; padding: 0.6rem 0.8rem; }
+  .fstep { grid-template-columns: 44px 1fr; }
+  .fstep-num { width: 44px; height: 44px; font-size: 1.1rem; }
+  .fstep:not(:last-child)::before { left: 21px; }
+  .fstep-content { padding: 0.3rem 0 2rem 1rem; }
+  h2 { font-size: clamp(1.6rem, 8vw, 2.5rem); }
+  .quiz-inner { padding: 1.2rem; }
+  .quiz-top { padding: 1.2rem; }
+  .quiz-bar-wrap { padding: 1rem 1.2rem 0; }
+  .quiz-footer { padding: 1rem 1.2rem; }
+  .mk-card { padding: 1.2rem; }
+  .case-body { padding: 1rem; }
+  .case-top { padding: 0.8rem 1rem; flex-wrap: wrap; gap: 0.4rem; }
+  .ip-compare-grid { grid-template-columns: 1fr; }
+  footer { padding: 2rem 1rem; }
+  .footer-main { grid-template-columns: 1fr; padding: 2rem 1rem 1.5rem; gap: 2rem; }
+  .footer-bottom { padding: 1rem; flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+  .footer-bottom-right { text-align: left; }
+  .footer-logo-big { font-size: 2rem; }
+  .sm-item { padding: 0.8rem 1rem; gap: 0.8rem; }
+  .startup-banner { padding: 1.5rem 1rem; }
+  .lc-card { padding: 1.2rem; }
+  .matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* FREE CONSULTATION */
+.consult-section { background: var(--bg); }
+.consult-wrap { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; }
+.consult-left {}
+.consult-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2rem; }
+.consult-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.9rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; background: var(--accent-bg); color: var(--lime); border: 1px solid var(--accent-border); }
+.consult-points { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+.consult-point { display: flex; gap: 1rem; align-items: flex-start; }
+.cp-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-bg); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+.cp-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+.cp-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+.consult-form-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 4px 24px rgba(0,0,0,0.07); position: relative; overflow: hidden; }
+.consult-form-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #16a34a, #0369a1, #6d28d9); }
+.cf-title { font-family: 'Instrument Serif', serif; font-size: 1.4rem; color: var(--text); margin-bottom: 0.3rem; }
+.cf-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.8rem; font-family: 'JetBrains Mono', monospace; }
+.cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.cf-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+.cf-group:last-of-type { margin-bottom: 0; }
+.cf-label { font-size: 0.72rem; font-weight: 700; color: var(--text); letter-spacing: 0.04em; font-family: 'JetBrains Mono', monospace; }
+.cf-input, .cf-select, .cf-textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; font-size: 0.85rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+.cf-input:focus, .cf-select:focus, .cf-textarea:focus { border-color: rgba(22,163,74,0.4); box-shadow: 0 0 0 3px rgba(22,163,74,0.08); }
+.cf-input::placeholder, .cf-textarea::placeholder { color: #aab0bc; }
+.cf-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+.cf-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+.cf-submit { margin-top: 1.5rem; width: 100%; padding: 1rem; border-radius: 100px; background: var(--lime); color: #fff; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; border: none; cursor: pointer; letter-spacing: 0.04em; transition: all 0.25s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.cf-submit:hover { background: #166534; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,0.2); }
+.cf-success { display: none; text-align: center; padding: 2rem 1rem; }
+.cf-success.show { display: block; animation: rise 0.5s ease; }
+.cf-success-icon { font-size: 3rem; margin-bottom: 1rem; }
+.cf-success-title { font-family: 'Instrument Serif', serif; font-size: 1.6rem; color: var(--lime); margin-bottom: 0.5rem; }
+.cf-success-msg { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+@media (max-width: 900px) {
+  .consult-wrap { grid-template-columns: 1fr; gap: 2.5rem; }
+  .cf-row { grid-template-columns: 1fr; }
+}
+
+/* IP AVAILABILITY SEARCH */
+.ipsearch-section { background: var(--surface); border-top: 1px solid var(--border); }
+.ipsearch-wrap { max-width: 800px; margin: 0 auto; }
+.ipsearch-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 4px 24px rgba(0,0,0,0.07); position: relative; overflow: hidden; }
+.ipsearch-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #16a34a, #0369a1, #6d28d9); }
+.ipsearch-type-label { font-size: 0.72rem; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+.ipsearch-type-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+.ip-type-chip { padding: 0.45rem 1.1rem; border-radius: 100px; border: 1px solid var(--border); background: var(--bg); font-size: 0.78rem; font-weight: 600; color: var(--muted); cursor: pointer; font-family: 'Syne', sans-serif; transition: all 0.2s; }
+.ip-type-chip:hover { border-color: rgba(22,163,74,0.3); color: var(--lime); background: var(--accent-bg); }
+.ip-type-chip.chip-tm.active { background: rgba(22,163,74,0.08); color: #16a34a; border-color: rgba(22,163,74,0.35); }
+.ip-type-chip.chip-cr.active { background: rgba(3,105,161,0.08); color: #0369a1; border-color: rgba(3,105,161,0.35); }
+.ip-type-chip.chip-pt.active { background: rgba(190,24,93,0.08); color: #be185d; border-color: rgba(190,24,93,0.35); }
+.ip-type-chip.chip-gi.active { background: rgba(109,40,217,0.08); color: #6d28d9; border-color: rgba(109,40,217,0.35); }
+.ipsearch-row { display: flex; gap: 0.75rem; margin-bottom: 0.8rem; }
+.ipsearch-input { flex: 1; padding: 0.9rem 1.2rem; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; font-size: 0.92rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+.ipsearch-input:focus { border-color: rgba(22,163,74,0.4); box-shadow: 0 0 0 3px rgba(22,163,74,0.08); }
+.ipsearch-input::placeholder { color: #aab0bc; }
+.ipsearch-btn { padding: 0.9rem 1.8rem; border-radius: 12px; background: var(--lime); color: #fff; font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.ipsearch-btn:hover { background: #166534; box-shadow: 0 4px 16px rgba(22,163,74,0.2); }
+.ipsearch-hint { font-size: 0.73rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.ipsearch-loading { display: none; text-align: center; padding: 2rem; margin-top: 1.5rem; }
+.ipsearch-loading.show { display: block; }
+.isl-dots { display: inline-flex; gap: 6px; margin-bottom: 0.6rem; }
+.isl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--lime); animation: dot-bounce 1.2s ease-in-out infinite; }
+.isl-dot:nth-child(2) { animation-delay: 0.2s; }
+.isl-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot-bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+.isl-msg { font-size: 0.78rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.ipsearch-results { display: none; margin-top: 1.8rem; }
+.ipsearch-results.show { display: block; animation: rise 0.4s ease; }
+.isr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.6rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.isr-query-label { font-size: 0.78rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.isr-query-label strong { color: var(--text); font-size: 0.88rem; }
+.isr-verdict { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 1.1rem; border-radius: 100px; font-size: 0.78rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.isr-verdict-clear { background: rgba(22,163,74,0.1); color: #16a34a; border: 1px solid rgba(22,163,74,0.3); }
+.isr-verdict-taken { background: rgba(190,24,93,0.1); color: #be185d; border: 1px solid rgba(190,24,93,0.3); }
+.isr-verdict-partial { background: rgba(194,65,12,0.1); color: #c2410c; border: 1px solid rgba(194,65,12,0.3); }
+.isr-cards { display: flex; flex-direction: column; gap: 0.65rem; }
+.isr-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; display: grid; grid-template-columns: 42px 1fr auto; gap: 1rem; align-items: center; transition: all 0.2s; }
+.isr-card:hover { border-color: rgba(0,0,0,0.14); box-shadow: 0 4px 12px rgba(0,0,0,0.06); transform: translateX(3px); }
+.isr-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.isr-icon-tm { background: rgba(22,163,74,0.1); }
+.isr-icon-cr { background: rgba(3,105,161,0.1); }
+.isr-icon-pt { background: rgba(190,24,93,0.1); }
+.isr-icon-gi { background: rgba(109,40,217,0.1); }
+.isr-name { font-size: 0.9rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+.isr-meta { font-size: 0.7rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 0.2rem; }
+.isr-status { font-size: 0.7rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 0.3rem 0.75rem; border-radius: 100px; white-space: nowrap; }
+.isr-status-registered { background: rgba(190,24,93,0.08); color: #be185d; border: 1px solid rgba(190,24,93,0.2); }
+.isr-status-similar { background: rgba(194,65,12,0.08); color: #c2410c; border: 1px solid rgba(194,65,12,0.2); }
+.isr-empty { text-align: center; padding: 2.5rem 1rem; }
+.isr-empty-icon { font-size: 2.8rem; margin-bottom: 0.8rem; }
+.isr-empty-title { font-size: 1.05rem; font-weight: 700; color: var(--lime); margin-bottom: 0.4rem; }
+.isr-empty-msg { font-size: 0.83rem; color: var(--muted); line-height: 1.65; }
+.isr-disclaimer { margin-top: 1.4rem; padding: 1rem 1.2rem; background: rgba(3,105,161,0.05); border: 1px solid rgba(3,105,161,0.15); border-radius: 10px; font-size: 0.75rem; color: var(--muted); line-height: 1.65; }
+.isr-disclaimer a { color: var(--cyan); font-weight: 600; text-decoration: none; }
+.isr-disclaimer a:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .ipsearch-row { flex-direction: column; }
+  .ipsearch-btn { width: 100%; }
+  .isr-card { grid-template-columns: 38px 1fr; }
+  .isr-status { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav>
+  <div class="logo">IPR<span>Shield</span></div>
+  <ul class="nav-pills">
+    <li><a href="#quiz">IP Quiz</a></li>
+    <li><a href="#compare">Compare</a></li>
+    <li><a href="#file">Filing</a></li>
+    <li><a href="#mistakes">Mistakes</a></li>
+    <li><a href="#startup">Startup Kit</a></li>
+    <li><a href="#cases">Cases</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#ipsearch">IP Search</a></li>
+    <li><a href="#consult" style="color:var(--lime);background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:100px;">Free Consult</a></li>
+  </ul>
+  <button class="nav-menu-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#quiz" onclick="closeMenu()">IP Quiz</a>
+  <a href="#compare" onclick="closeMenu()">Compare</a>
+  <a href="#file" onclick="closeMenu()">Filing Guide</a>
+  <a href="#mistakes" onclick="closeMenu()">Mistakes</a>
+  <a href="#startup" onclick="closeMenu()">Startup Kit</a>
+  <a href="#cases" onclick="closeMenu()">Case Laws</a>
+  <a href="#faq" onclick="closeMenu()">FAQ</a>
+  <a href="#ipsearch" onclick="closeMenu()">IP Search</a>
+  <a href="#consult" onclick="closeMenu()" style="color:var(--lime);font-weight:700;">✦ Free Consultation</a>
+</div>
+
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="hero-tag">GNLU · Semester VI · ICE Creative Component</div>
+  <h1 class="hero-title">
+    <span class="line1">Protect Your</span>
+    <span class="line2">Idea.</span>
+    <span class="line3">Power Your Startup.</span>
+  </h1>
+  <p class="hero-desc">India's most practical guide to Intellectual Property Rights — built for creators, law students, and entrepreneurs who need real answers, not textbook theory.</p>
+  <div class="hero-actions">
+    <a href="#quiz" class="btn btn-lime">Find My IP Type →</a>
+    <a href="#consult" class="btn btn-ghost">Free Consultation</a>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <div class="scroll-label">Scroll</div>
+  </div>
+</section>
+
+<section class="quiz-section" id="quiz">
+  <div class="s-tag">Step 01 — Identify</div>
+  <h2>What Type of IP<br>Do You Have?</h2>
+  <p class="s-lead">Answer 4 questions. Get your IP type in 60 seconds.</p>
+  <div class="quiz-outer">
+    <div class="quiz-shell">
+      <div class="quiz-top">
+        <div class="quiz-top-left" id="q-title">What have you created?</div>
+        <div class="quiz-top-right" id="q-count">01 / 04</div>
+      </div>
+      <div class="quiz-bar-wrap">
+        <div class="qbar active" id="qb0"><div class="fill"></div></div>
+        <div class="qbar" id="qb1"><div class="fill"></div></div>
+        <div class="qbar" id="qb2"><div class="fill"></div></div>
+        <div class="qbar" id="qb3"><div class="fill"></div></div>
+      </div>
+      <div class="quiz-inner">
+        <div class="quiz-question active" id="qq0">What best describes what you've created?</div>
+        <div id="qopts0" class="quiz-opts">
+          <button class="qopt" onclick="pickOpt(0,0,this)"><span class="opt-icon">🎨</span>A creative work — art, writing, music, software, film</button>
+          <button class="qopt" onclick="pickOpt(0,1,this)"><span class="opt-icon">⚙️</span>A new invention, product or industrial process</button>
+          <button class="qopt" onclick="pickOpt(0,2,this)"><span class="opt-icon">🏷️</span>A brand name, logo, slogan or business identity</button>
+          <button class="qopt" onclick="pickOpt(0,3,this)"><span class="opt-icon">📍</span>A product tied to a specific geographic region</button>
+        </div>
+        <div class="quiz-question" id="qq1">Is your creation documented — written, saved, or recorded?</div>
+        <div id="qopts1" class="quiz-opts" style="display:none">
+          <button class="qopt" onclick="pickOpt(1,0,this)"><span class="opt-icon">✅</span>Yes — it's fixed and documented</button>
+          <button class="qopt" onclick="pickOpt(1,1,this)"><span class="opt-icon">💭</span>Not yet — still in my head</button>
+          <button class="qopt" onclick="pickOpt(1,2,this)"><span class="opt-icon">🔬</span>It's a process or formula, not a creative work</button>
+        </div>
+        <div class="quiz-question" id="qq2">Do you intend to use this commercially?</div>
+        <div id="qopts2" class="quiz-opts" style="display:none">
+          <button class="qopt" onclick="pickOpt(2,0,this)"><span class="opt-icon">💰</span>Yes — commercial use is primary</button>
+          <button class="qopt" onclick="pickOpt(2,1,this)"><span class="opt-icon">🌐</span>Partially — recognition + some sharing</button>
+          <button class="qopt" onclick="pickOpt(2,2,this)"><span class="opt-icon">📚</span>No — personal or academic only</button>
+        </div>
+        <div class="quiz-question" id="qq3">How important is exclusive legal control over your creation?</div>
+        <div id="qopts3" class="quiz-opts" style="display:none">
+          <button class="qopt" onclick="pickOpt(3,0,this)"><span class="opt-icon">🔒</span>Critical — I need full exclusivity</button>
+          <button class="qopt" onclick="pickOpt(3,1,this)"><span class="opt-icon">⚖️</span>Moderate — credit + some shared uses</button>
+          <button class="qopt" onclick="pickOpt(3,2,this)"><span class="opt-icon">🏪</span>Brand protection is the priority</button>
+        </div>
+        <div class="quiz-result-panel" id="qresult">
+          <span class="qr-emoji" id="qr-icon">©</span>
+          <div class="qr-title" id="qr-title">Copyright</div>
+          <p class="qr-desc" id="qr-desc"></p>
+          <div class="qr-pills" id="qr-pills"></div>
+        </div>
+      </div>
+      <div class="quiz-footer" id="qfooter">
+        <span class="qfooter-hint" id="qhint">Select an option above</span>
+        <button class="qbtn qbtn-go" id="qnext" onclick="qNext()" disabled>Next →</button>
+      </div>
+      <div class="quiz-footer" id="qresetbar" style="display:none;justify-content:center">
+        <button class="qbtn qbtn-reset" onclick="qReset()">↺ Take Again</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="compare-section reveal" id="compare">
+  <div class="s-tag">Step 02 — Understand</div>
+  <h2>The Four Types of IP<br>Protection in India</h2>
+  <p class="s-lead">Every type of IP serves a distinct legal purpose. Understand which one fits your creation before you file.</p>
+
+  <div class="ip-compare-grid">
+    <div class="ip-cg-card cg-tm" id="sc-tm-card">
+      <div class="cg-head">
+        <div class="cg-icon">™</div>
+        <div><div class="cg-name">Trademark</div><div class="cg-act">Trade Marks Act, 1999</div></div>
+      </div>
+      <div class="cg-body">
+        <div class="cg-row"><span class="cg-k">Protects</span><span class="cg-v">Brand names, logos, slogans</span></div>
+        <div class="cg-row"><span class="cg-k">Duration</span><span class="cg-v">10 yrs, renewable ∞</span></div>
+        <div class="cg-row"><span class="cg-k">Granted by</span><span class="cg-v">Trade Marks Registry</span></div>
+        <div class="cg-row"><span class="cg-k">Key right</span><span class="cg-v">Exclusive commercial use</span></div>
+        <div class="cg-row"><span class="cg-k">Example</span><span class="cg-v">Amul®, Tata®, Zomato®</span></div>
+        <div class="cg-row"><span class="cg-k">Cost</span><span class="cg-v">₹4,500 / class</span></div>
+      </div>
+    </div>
+    <div class="ip-cg-card cg-cr" id="sc-cr-card">
+      <div class="cg-head">
+        <div class="cg-icon">©</div>
+        <div><div class="cg-name">Copyright</div><div class="cg-act">Copyright Act, 1957</div></div>
+      </div>
+      <div class="cg-body">
+        <div class="cg-row"><span class="cg-k">Protects</span><span class="cg-v">Art, music, code, writing</span></div>
+        <div class="cg-row"><span class="cg-k">Duration</span><span class="cg-v">Life + 60 years</span></div>
+        <div class="cg-row"><span class="cg-k">Granted by</span><span class="cg-v">Auto on creation</span></div>
+        <div class="cg-row"><span class="cg-k">Key right</span><span class="cg-v">Reproduction, adaptation</span></div>
+        <div class="cg-row"><span class="cg-k">Example</span><span class="cg-v">Books, films, software</span></div>
+        <div class="cg-row"><span class="cg-k">Cost</span><span class="cg-v">₹500 (registration)</span></div>
+      </div>
+    </div>
+    <div class="ip-cg-card cg-pt" id="sc-pt-card">
+      <div class="cg-head">
+        <div class="cg-icon">⚙</div>
+        <div><div class="cg-name">Patent</div><div class="cg-act">Patents Act, 1970</div></div>
+      </div>
+      <div class="cg-body">
+        <div class="cg-row"><span class="cg-k">Protects</span><span class="cg-v">Inventions, processes</span></div>
+        <div class="cg-row"><span class="cg-k">Duration</span><span class="cg-v">20 years (no renewal)</span></div>
+        <div class="cg-row"><span class="cg-k">Granted by</span><span class="cg-v">Indian Patent Office</span></div>
+        <div class="cg-row"><span class="cg-k">Key right</span><span class="cg-v">Exclusive manufacture</span></div>
+        <div class="cg-row"><span class="cg-k">Example</span><span class="cg-v">Pharma, tech inventions</span></div>
+        <div class="cg-row"><span class="cg-k">Cost</span><span class="cg-v">₹1,600 filing fee</span></div>
+      </div>
+    </div>
+    <div class="ip-cg-card cg-gi" id="sc-gi-card">
+      <div class="cg-head">
+        <div class="cg-icon">📍</div>
+        <div><div class="cg-name">GI Tag</div><div class="cg-act">GI Act, 1999</div></div>
+      </div>
+      <div class="cg-body">
+        <div class="cg-row"><span class="cg-k">Protects</span><span class="cg-v">Region-origin products</span></div>
+        <div class="cg-row"><span class="cg-k">Duration</span><span class="cg-v">10 yrs, renewable ∞</span></div>
+        <div class="cg-row"><span class="cg-k">Granted by</span><span class="cg-v">GI Registry, Chennai</span></div>
+        <div class="cg-row"><span class="cg-k">Key right</span><span class="cg-v">Collective geographic right</span></div>
+        <div class="cg-row"><span class="cg-k">Example</span><span class="cg-v">Darjeeling Tea, Basmati</span></div>
+        <div class="cg-row"><span class="cg-k">Cost</span><span class="cg-v">₹5,000 filing fee</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="filing-section reveal" id="file">
+  <div class="s-tag">Step 03 — Act</div>
+  <h2>Step-by-Step Filing<br>Guide (India)</h2>
+  <p class="s-lead">Your complete roadmap from creation to legal protection.</p>
+  <div class="filing-layout">
+    <div class="ftabs-col">
+      <button class="ftab active" onclick="switchFtab('tm',this)"><span>™</span> Trademark</button>
+      <button class="ftab" onclick="switchFtab('cr',this)"><span>©</span> Copyright</button>
+      <button class="ftab" onclick="switchFtab('pt',this)"><span>⚙</span> Patent</button>
+      <button class="ftab" onclick="switchFtab('gi',this)"><span>📍</span> GI Tag</button>
+    </div>
+    <div>
+      <div class="fsteps active" id="ft-tm">
+        <div class="fstep"><div class="fstep-num">1</div><div class="fstep-content"><div class="fstep-title">Conduct a Comprehensive Trademark Search</div><div class="fstep-desc">Search the IP India database for identical and deceptively similar marks across all 45 Nice Classification classes. Run both phonetic and visual similarity checks. A thorough search prevents costly oppositions — in <em>Cadila Health Care v. Cadila Pharmaceuticals (2001)</em>, the Supreme Court established a multi-factor test for deceptive similarity, including phonetic and visual resemblance, the nature of goods, and consumer literacy.</div><span class="fstep-badge">ipo.gov.in → TM Search</span></div></div>
+        <div class="fstep"><div class="fstep-num">2</div><div class="fstep-content"><div class="fstep-title">Assess Mark Distinctiveness</div><div class="fstep-desc">Marks fall on a spectrum: Generic (never registrable) → Descriptive (must prove acquired distinctiveness) → Suggestive → Arbitrary → Fanciful (strongest). The stronger the mark, the easier enforcement. Invented words like "KODAK" or "XEROX" get the widest protection. Avoid descriptive marks — the Registry will likely raise a Section 9 objection under the Trade Marks Act, 1999.</div><span class="fstep-badge">TM Act S.9 — Absolute Grounds</span></div></div>
+        <div class="fstep"><div class="fstep-num">3</div><div class="fstep-content"><div class="fstep-title">Classify Your Goods / Services (Nice Classification)</div><div class="fstep-desc">Identify the correct Nice Classification class(es) out of 45 (Classes 1–34: goods; 35–45: services). Each class requires a separate fee. Incorrect classification can result in refusal or gaps in protection. For a food-tech startup, you may need Class 30 (food), Class 35 (business services), and Class 43 (restaurant services) simultaneously.</div><span class="fstep-badge">Nice Classification (1–45)</span></div></div>
+        <div class="fstep"><div class="fstep-num">4</div><div class="fstep-content"><div class="fstep-title">File Form TM-A Online</div><div class="fstep-desc">File at ipindiaonline.gov.in. Include: mark representation (word/device/composite), class, goods/services description, applicant details, date of first use (if claiming prior use). Govt. fee: ₹4,500 (individual/startup/MSME) or ₹9,000 (company). You get TM-filing date as your priority date from this moment — critical for first-to-file priority. Use ™ symbol immediately after filing.</div><span class="fstep-badge">ipindiaonline.gov.in</span></div></div>
+        <div class="fstep"><div class="fstep-num">5</div><div class="fstep-content"><div class="fstep-title">Respond to the Examination Report</div><div class="fstep-desc">The Examiner issues a report within 30 days. You have 2 months to respond to objections (extendable). Common objections: lack of distinctiveness (S.9), deceptive similarity to existing marks (S.11), or descriptive nature. Prepare a counter-statement with evidence of use, distinctiveness, and market reputation. If objection is not resolved, a personal hearing is scheduled before the Registrar.</div><span class="fstep-badge">Response window: 2 months</span></div></div>
+        <div class="fstep"><div class="fstep-num">6</div><div class="fstep-content"><div class="fstep-title">Publication in the Trade Marks Journal</div><div class="fstep-desc">Approved marks are published in the official Trade Marks Journal for a 4-month opposition window. Any person can file an opposition under S.21 citing prior rights, bad faith, or likelihood of confusion. Both sides exchange evidence and are heard. If unopposed — or if the opposition fails — the mark proceeds directly to registration. Monitor the Journal for conflicting third-party applications too.</div><span class="fstep-badge">Opposition window: 4 months</span></div></div>
+        <div class="fstep"><div class="fstep-num">7</div><div class="fstep-content"><div class="fstep-title">Certificate of Registration + Maintenance</div><div class="fstep-desc">Registration certificate issued and valid for 10 years from filing date, renewable indefinitely every 10 years (Form TM-R). Use ® symbol only after registration. Failure to use the mark for 5 consecutive years exposes it to cancellation under S.47 (non-use). Maintain evidence of continuous commercial use — invoices, advertising records, product packaging. Consider international protection via the Madrid Protocol as you scale.</div><span class="fstep-badge">Total: 18–24 months</span></div></div>
+      </div>
+      <div class="fsteps" id="ft-cr">
+        <div class="fstep"><div class="fstep-num">1</div><div class="fstep-content"><div class="fstep-title">Creation = Automatic Protection (But Register Anyway)</div><div class="fstep-desc">Copyright arises automatically upon original creation fixed in material form — no registration or formality required under S.13, Copyright Act, 1957. However, registration creates a public record, acts as prima facie evidence of ownership in court, and is essential for filing an infringement suit quickly. The Supreme Court in <em>Eastern Book Company v. D.B. Modak (2008)</em> held that mere effort isn't enough — the work must reflect the author's creative choices. A "modicum of creativity" is required. Unregistered works can still be enforced, but registration shifts the burden of proof in your favour.</div><span class="fstep-badge">Copyright Act, 1957 — S.13</span></div></div>
+        <div class="fstep"><div class="fstep-num">2</div><div class="fstep-content"><div class="fstep-title">Understand What Copyright Protects (and What It Doesn't)</div><div class="fstep-desc">Copyright protects the expression of ideas — not the ideas themselves (the idea-expression dichotomy under S.13). Protected works: literary works (including source code), dramatic works, musical works, artistic works, cinematographic films, and sound recordings. Not protected: titles, slogans, names, facts, or news items. For software, both source code and object code are protected as "literary works." For databases, the selection and arrangement must reflect creativity — raw data alone doesn't qualify.</div><span class="fstep-badge">Idea-Expression Dichotomy</span></div></div>
+        <div class="fstep"><div class="fstep-num">3</div><div class="fstep-content"><div class="fstep-title">Document Your Authorship Rigorously</div><div class="fstep-desc">Build a paper trail: version-controlled commits with timestamps (GitHub/GitLab), email drafts, signed agreements with collaborators, dated sketches or manuscripts. For software: both source and object code. For music: original recordings with metadata. For art: physical originals + high-resolution scans. In joint works, clearly document each co-author's contribution — S.2(z) defines joint authorship and ownership is shared. If created during employment, check if S.17 (employer as first owner) applies.</div><span class="fstep-badge">Keep timestamped evidence</span></div></div>
+        <div class="fstep"><div class="fstep-num">4</div><div class="fstep-content"><div class="fstep-title">File Form XIV at copyright.gov.in</div><div class="fstep-desc">Submit online or by post to the Copyright Office (New Delhi). Fee: ₹500 per literary/dramatic/musical/artistic work; ₹2,000 for cinematographic films; ₹500 for sound recordings. Include: title, nature of work, author details, year of creation, two copies of the work. File separate applications for each distinct work. If the work is unpublished, mark it so — it still qualifies. Assignments and licences must be in writing under S.19 and S.30 respectively.</div><span class="fstep-badge">copyright.gov.in</span></div></div>
+        <div class="fstep"><div class="fstep-num">5</div><div class="fstep-content"><div class="fstep-title">Mandatory 30-Day Objection Window</div><div class="fstep-desc">After filing, the Copyright Office issues a mandatory diary number and waits 30 days for third-party objections under S.45. If an objection is filed, both parties are heard before the Registrar of Copyrights. The examiner scrutinises the application and may raise discrepancies (wrong author name, unclear work description, missing NOC from publisher). If no objection is raised and the examiner is satisfied, the work proceeds to registration. This is not a "registered mark" — it is an "entry in the Register of Copyrights."</div><span class="fstep-badge">Objection window: 30 days</span></div></div>
+        <div class="fstep"><div class="fstep-num">6</div><div class="fstep-content"><div class="fstep-title">Entry in Register of Copyrights + Ongoing Rights</div><div class="fstep-desc">Certificate of registration issued. Duration: Life + 60 years for most works (S.22); 60 years from publication for anonymous/pseudonymous works, posthumous works, and government/corporate works (S.27–29). The register is publicly searchable at copyright.gov.in. Registration aids licensing, assignment, and in customs seizure of infringing imports. Moral rights (right of paternity and integrity under S.57) exist separately from economic rights and cannot be waived by contract.</div><span class="fstep-badge">Total: 1–3 months</span></div></div>
+      </div>
+      <div class="fsteps" id="ft-pt">
+        <div class="fstep"><div class="fstep-num">1</div><div class="fstep-content"><div class="fstep-title">Prior Art Search — Before Everything Else</div><div class="fstep-desc">Search IPO (ipindiapatents.gov.in), USPTO, EPO (Espacenet), and Google Patents. Your invention must be: (a) novel — not disclosed anywhere in the world before; (b) non-obvious — not obvious to a "person skilled in the art"; (c) industrially applicable. Check S.3 of the Patents Act, 1970 for what is NOT patentable — including mathematical methods, business methods, mere discoveries, and computer programs "per se." The landmark <em>Novartis AG v. Union of India (2013)</em> case reinforced that incremental innovations without enhanced therapeutic efficacy (the S.3(d) bar) cannot be patented. Document all prior art found.</div><span class="fstep-badge">ipindiapatents.gov.in</span></div></div>
+        <div class="fstep"><div class="fstep-num">2</div><div class="fstep-content"><div class="fstep-title">Determine Inventorship and Ownership</div><div class="fstep-desc">The inventor is the natural person(s) who conceived the inventive concept — not who built or funded it. Under S.6, an application can be filed by the inventor, their assignee, or legal representative. For employer-employee situations: inventions made during employment and in the course of duties belong to the employer (S.82 analogy via contract). Ensure written IP assignment from all co-inventors before filing. Joint inventors must each sign the declaration. Incorrect inventorship can invalidate a patent post-grant.</div><span class="fstep-badge">Inventorship ≠ Ownership</span></div></div>
+        <div class="fstep"><div class="fstep-num">3</div><div class="fstep-content"><div class="fstep-title">Draft Patent Specification (Complete or Provisional)</div><div class="fstep-desc">A provisional specification secures your priority date with a basic description — you have 12 months to file the complete specification (Form 2). A complete specification includes: title, field of invention, background/prior art, detailed description, drawings (if applicable), abstract, and most critically — claims. Claims define the exact legal boundary of your patent rights. Draft broadly (independent claims) with narrower fallback positions (dependent claims). Hire a registered patent agent (mandatory for foreign applicants; recommended for Indian individuals too) for complex inventions.</div><span class="fstep-badge">Claims = most critical section</span></div></div>
+        <div class="fstep"><div class="fstep-num">4</div><div class="fstep-content"><div class="fstep-title">File Provisional Application (Form 1 + 2)</div><div class="fstep-desc">File at the appropriate Patent Office (Delhi, Mumbai, Chennai, or Kolkata — based on applicant's location). Fees: ₹1,600 (individual/startup), ₹4,000 (small entity), ₹8,000 (large entity). For international protection, file a PCT application within 12 months of your priority date to enter 150+ countries through a single filing. Include a Statement of Undertaking (Form 3) disclosing corresponding applications abroad. If the invention relates to defence/atomic energy, file only in India first under S.39.</div><span class="fstep-badge">Provisional → 12 months → Complete</span></div></div>
+        <div class="fstep"><div class="fstep-num">5</div><div class="fstep-content"><div class="fstep-title">Automatic Publication at 18 Months</div><div class="fstep-desc">Your application is automatically published in the Official Gazette of the Patent Office 18 months from the priority date. This makes your invention public. Before publication, you cannot enforce rights but also cannot lose novelty due to your own disclosures after filing. To accelerate publication (e.g., for licensing negotiations or enforcement), file a Request for Early Publication (Form 9) — the application is published within 1 month of request. Note: Publication does not mean grant.</div><span class="fstep-badge">Early: File Form 9</span></div></div>
+        <div class="fstep"><div class="fstep-num">6</div><div class="fstep-content"><div class="fstep-title">Request Examination (Form 18 or 18A)</div><div class="fstep-desc">Examination is NOT automatic — you must file Form 18 (regular) or Form 18A (expedited) within 48 months from the priority date or face abandonment. Expedited examination (Form 18A) is available to: startups, MSMEs, individual inventors, and applicants with PCT national phase. The examiner issues a First Examination Report (FER) citing prior art and objections. You must respond within 6 months (extendable to 9 months). Multiple rounds of examination (FER-reply cycles) are possible. Pre-grant opposition can be filed by any person after publication under S.25(1).</div><span class="fstep-badge">Fee: ₹4,000 (individual)</span></div></div>
+        <div class="fstep"><div class="fstep-num">7</div><div class="fstep-content"><div class="fstep-title">Patent Grant, Post-Grant Opposition & Annual Renewal</div><div class="fstep-desc">Once examination objections are resolved, the patent is sealed and granted. It is published in the Official Gazette. From grant, any person may file a post-grant opposition (S.25(2)) within 12 months at the Patent Office. Pay annual renewal fees starting from the 3rd year after filing — miss one and the patent lapses (restoration possible under S.60 within 18 months). Total protection: up to 20 years from filing date. Working statements (Form 27) must be filed annually to confirm commercial use in India — compulsory licensing (S.84) can be triggered if the patent is not worked.</div><span class="fstep-badge">Total: 3–5 years</span></div></div>
+      </div>
+      <div class="fsteps" id="ft-gi">
+        <div class="fstep"><div class="fstep-num">1</div><div class="fstep-content"><div class="fstep-title">Establish the Geographic Origin–Quality Link</div><div class="fstep-desc">Under S.1(3)(e) of the GI Act, 1999, a GI is a sign used on goods that originate from a specific geographic region and that possess qualities, reputation, or characteristics essentially attributable to that origin. Document: (a) historical evidence of production in the region, (b) the specific quality or characteristic that derives from the geography (soil, climate, traditional process), and (c) the community of producers. This "link" is the foundation of your application — unlike a trademark, the IP belongs to the region, not a person. In <em>Tea Board India v. ITC Ltd. (2010)</em>, the Calcutta HC explored how GI rights can protect geographic names even outside the registered product category.</div><span class="fstep-badge">GI Act, 1999 — S.11</span></div></div>
+        <div class="fstep"><div class="fstep-num">2</div><div class="fstep-content"><div class="fstep-title">Form an Eligible Producers' Association</div><div class="fstep-desc">Only an "association of persons," producers' organisation, or any authority established by law can apply — not individual producers. Under S.11, the applicant must represent the interests of the entire producer community in that region. Establish a formal association with: registered bylaws, a defined membership list (all producers in the region), democratic governance structure, and a mechanism to grant "authorised user" status to individual producers. Ensure the association has legal standing (registered society or cooperative is ideal).</div><span class="fstep-badge">Collective right only</span></div></div>
+        <div class="fstep"><div class="fstep-num">3</div><div class="fstep-content"><div class="fstep-title">Draft and File Form GI-1 at the GI Registry, Chennai</div><div class="fstep-desc">Submit to the Geographical Indications Registry (Trade Marks Registry, Chennai). The application must include: a statement of case establishing the origin link, class of goods (under Schedule 1 of GI Rules), the defined geographic area (with a map), proof of quality/reputation (scientific reports, historical records, surveys), production standards, and inspection structures. Fee: ₹5,000. For handicrafts, coordinate with the Office of Development Commissioner (Handicrafts). The Registry assigns a GI number upon receipt.</div><span class="fstep-badge">ipindia.gov.in → GI Registry</span></div></div>
+        <div class="fstep"><div class="fstep-num">4</div><div class="fstep-content"><div class="fstep-title">Examination, GI Journal Publication & Opposition</div><div class="fstep-desc">The Examiner reviews the application — scrutinising the geographic-quality link, completeness of documentation, and whether the GI is already generic. If accepted, the GI is published in the Geographical Indications Journal. Any person may file a Notice of Opposition within 3 months of publication, citing: the GI is misleading, generic, contrary to public order, or conflicts with existing IP rights. Both parties file evidence and counter-statements. The Registrar issues a final decision. This process can take 12–18 months from filing.</div><span class="fstep-badge">Opposition: 3 months</span></div></div>
+        <div class="fstep"><div class="fstep-num">5</div><div class="fstep-content"><div class="fstep-title">Enrol Authorised Users (Form GI-2)</div><div class="fstep-desc">Individual producers within the region must separately register as "authorised users" under S.17 (Form GI-2, fee: ₹500). Only authorised users can use the GI tag commercially on their products. The registered applicant (producers' association) manages the authorised user registry and sets quality standards. Infringement of a registered GI carries criminal penalties (up to 3 years + ₹50,000 fine under S.39) and civil remedies. Well-known Indian GIs: Darjeeling Tea (first GI registered in India, 2004), Kanchipuram Silk, Kolhapuri Chappal, Basmati Rice, Alphonso Mango, and 600+ others.</div><span class="fstep-badge">Renewable every 10 years</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mistakes-section reveal" id="mistakes">
+  <div class="s-tag">Step 04 — Avoid</div>
+  <h2>10 IP Mistakes That<br>Kill Great Ideas</h2>
+  <p class="s-lead">Most IP failures aren't bad ideas — they're avoidable errors in timing, paperwork, and strategy.</p>
+  <div class="mistakes-grid">
+    <div class="mk-card"><div class="mk-num">Mistake 01</div><div class="mk-title">Public Disclosure Before Patent Filing</div><div class="mk-desc">Presenting your invention at a conference, posting on social media, or publishing before filing destroys novelty and makes your invention unpatentable.</div><div class="mk-fix">File a provisional application before any public disclosure — even a casual LinkedIn post counts.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 02</div><div class="mk-title">Assuming Copyright = Trademark</div><div class="mk-desc">Your logo is auto-protected by copyright, but that won't stop someone from launching a competing brand with a similar name. Only trademark gives exclusive commercial identity rights.</div><div class="mk-fix">Register both: copyright for the artistic work, trademark for brand exclusivity in commerce.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 03</div><div class="mk-title">Choosing a Generic or Descriptive Mark</div><div class="mk-desc">"Best Bread" or "Fast Delivery" cannot be registered. The Trade Marks Act requires distinctiveness. Generic marks can never be registered.</div><div class="mk-fix">Choose an invented, arbitrary, or suggestive mark. Test distinctiveness before investing in branding.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 04</div><div class="mk-title">No IP Clause in Employment Agreements</div><div class="mk-desc">Without explicit IP assignment clauses, ownership of employee-created work is disputed. Default rules may not favour the employer in all cases.</div><div class="mk-fix">Include IP assignment, confidentiality, and non-compete clauses in every employment contract.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 05</div><div class="mk-title">Verbal Licensing Agreements</div><div class="mk-desc">Under Section 19 of the Copyright Act, assignment must be in writing and signed. Oral terms on royalties and scope are nearly impossible to enforce.</div><div class="mk-fix">Always document licenses: scope, duration, territory, royalty rate, exclusivity, sublicensing rights.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 06</div><div class="mk-title">No International Protection Strategy</div><div class="mk-desc">An Indian trademark or patent gives zero protection abroad. Competitors in export markets can freely use your brand or copy your patented technology.</div><div class="mk-fix">Use Madrid Protocol (trademark) and PCT (patent) to file internationally as you scale.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 07</div><div class="mk-title">Not Monitoring or Enforcing Rights</div><div class="mk-desc">Trademark rights can be lost through non-enforcement ("genericide"). Allowing infringers to operate unchallenged weakens your legal position over time.</div><div class="mk-fix">Set up watch services, Google Alerts, and enforce consistently — even against small infringers.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 08</div><div class="mk-title">Sharing Trade Secrets Without NDAs</div><div class="mk-desc">India has no standalone trade secrets statute. Protection depends entirely on contract law. Sharing formulas or algorithms without NDAs leaves zero legal recourse.</div><div class="mk-fix">Sign NDAs before sharing any confidential info — with investors, partners, employees, and vendors.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 09</div><div class="mk-title">Missing Renewal and Annuity Deadlines</div><div class="mk-desc">Trademarks expire every 10 years. Patent annual fees are due each year after grant. Missing even one deadline can cause irreversible lapse of your IP rights.</div><div class="mk-fix">Maintain a dedicated IP calendar with all renewal dates and 90-day advance reminders.</div></div>
+    <div class="mk-card"><div class="mk-num">Mistake 10</div><div class="mk-title">GPL Open Source in Commercial Products</div><div class="mk-desc">Incorporating GPL-licensed code in commercial software can force you to release your entire codebase publicly — the "copyleft" viral effect that has destroyed startup value.</div><div class="mk-fix">Audit all dependencies. Use MIT or Apache 2.0 licensed libraries in commercial products only.</div></div>
+  </div>
+</section>
+
+<section class="cases-section reveal" id="cases">
+  <div class="s-tag">Step 05 — Learn</div>
+  <h2>Landmark Cases<br>Every Creator Must Know</h2>
+  <p class="s-lead">Real Indian IP cases — the legal lessons that shaped modern practice.</p>
+  <div class="cases-grid">
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Trademark</span><span class="case-yr">1996 · Supreme Court</span></div><div class="case-body"><div class="case-name">N.R. Dongre v. Whirlpool Corporation</div><div class="case-desc">Whirlpool obtained an injunction against an Indian company using "Whirlpool" — despite no Indian registration — based on its transborder reputation as a well-known international mark.</div><div class="case-lesson">⚖ A well-known foreign mark can be enforced in India without local registration. Reputation crosses borders before paperwork does.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Patent</span><span class="case-yr">2013 · Supreme Court</span></div><div class="case-body"><div class="case-name">Novartis AG v. Union of India</div><div class="case-desc">Novartis was denied a patent for a modified form of its cancer drug Gleevec. The Supreme Court upheld Section 3(d), blocking "evergreening" — minor modifications without enhanced therapeutic efficacy.</div><div class="case-lesson">⚖ India blocks pharmaceutical companies from patenting incremental changes. Access to medicine beats monopoly extension.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Copyright</span><span class="case-yr">2008 · Supreme Court</span></div><div class="case-body"><div class="case-name">Eastern Book Company v. D.B. Modak</div><div class="case-desc">Court judgments require a "modicum of creativity" for copyright. Mere copy-editing was insufficient. India rejected the "sweat of the brow" doctrine — effort alone creates no copyright.</div><div class="case-lesson">⚖ Copyright requires creativity, not just labour. Hard work alone doesn't create IP rights in India.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Trademark · Domain</span><span class="case-yr">1999 · Delhi HC</span></div><div class="case-body"><div class="case-name">Yahoo! Inc. v. Akash Arora</div><div class="case-desc">India's first cybersquatting case. Yahoo! stopped "yahooindia.com" — holding that domain names are protectable as trademarks under passing-off principles, even without express domain-specific registration.</div><div class="case-lesson">⚖ Domain names are trademark assets. Register across all major TLDs before competitors do.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Design + Trademark</span><span class="case-yr">2018 · Delhi HC</span></div><div class="case-body"><div class="case-name">Carlsberg Breweries v. Som Distilleries</div><div class="case-desc">Carlsberg asserted both trademark and trade dress rights against a confusingly similar bottle design and label — showing how multiple IP types can protect different aspects of one product.</div><div class="case-lesson">⚖ Stack your IP: trademark + design + copyright can simultaneously protect different dimensions of one product.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">GI</span><span class="case-yr">2010 · Calcutta HC</span></div><div class="case-body"><div class="case-name">Tea Board India v. ITC Limited</div><div class="case-desc">Tea Board challenged ITC naming a hotel lounge "Darjeeling," arguing it misled consumers into linking it with GI-protected Darjeeling tea — exploring GI rights beyond product categories.</div><div class="case-lesson">⚖ GI protection can extend beyond products to prevent misuse of geographic names in unrelated service industries.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Trademark</span><span class="case-yr">2001 · Supreme Court</span></div><div class="case-body"><div class="case-name">Cadila Health Care v. Cadila Pharmaceuticals</div><div class="case-desc">The Supreme Court laid down a comprehensive multi-factor test for "deceptive similarity" between pharmaceutical marks — considering phonetic, visual, and structural resemblance, plus the literacy of the consumer and the seriousness of confusion in medicinal products.</div><div class="case-lesson">⚖ In pharma trademarks, the standard of similarity is stricter — even a small chance of consumer confusion can be fatal to a brand.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Copyright · Fair Dealing</span><span class="case-yr">2016 · Delhi HC</span></div><div class="case-body"><div class="case-name">The Chancellor, Masters & Scholars of the University of Oxford v. Rameshwari Photocopy Services</div><div class="case-desc">Delhi University's photocopy shop was sued by Oxford, Cambridge, and other publishers for copying textbook excerpts for students. The Delhi HC held that such reproduction for educational purposes fell within the "fair dealing" exception under S.52(1)(i) of the Copyright Act.</div><div class="case-lesson">⚖ Educational reproduction is a permitted fair dealing under Indian copyright law — but only for courses, not commercial distribution.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Patent · Compulsory License</span><span class="case-yr">2012 · IPAB</span></div><div class="case-body"><div class="case-name">Bayer Corporation v. NATCO Pharma</div><div class="case-desc">India's first compulsory licence was granted to NATCO Pharma to manufacture a generic version of Bayer's patented cancer drug Nexavar. The IPAB found Bayer had not worked the patent in India and the drug was unaffordable — both triggering S.84 of the Patents Act.</div><div class="case-lesson">⚖ A patent is a social contract. Failure to make the invention affordable and accessible in India can open the door to compulsory licensing.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Trademark · Well-Known Mark</span><span class="case-yr">2010 · Delhi HC</span></div><div class="case-body"><div class="case-name">Tata Sons Ltd. v. Manoj Dodia</div><div class="case-desc">The Delhi HC declared "TATA" a well-known trademark under S.11(6) of the Trade Marks Act, 1999, recognising its extraordinary reputation across diverse goods and services. This gave Tata protection across all classes, not just those for which it was registered.</div><div class="case-lesson">⚖ A "well-known mark" under Indian law receives cross-class protection. Building brand reputation is its own IP strategy.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Copyright · Performers' Rights</span><span class="case-yr">2006 · Delhi HC</span></div><div class="case-body"><div class="case-name">Anil Gupta v. Kunal Dasgupta</div><div class="case-desc">The plaintiff claimed copyright over the concept of a reality television show about matchmaking. The Delhi HC held that while mere ideas aren't copyrightable, a detailed concept note with unique formats and structures could receive protection as a literary work.</div><div class="case-lesson">⚖ A well-documented concept note or show bible can be copyrighted. Ideas can't be owned — but the detailed expression of them can.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Trade Secret · Contract</span><span class="case-yr">2019 · Bombay HC</span></div><div class="case-body"><div class="case-name">Bombay Dyeing v. Nusli Wadia (Trade Secret Context)</div><div class="case-desc">Indian courts have consistently held that in the absence of a specific trade secrets statute, protection flows from contract law and breach of confidence. NDAs and employment agreements are the primary legal shields — courts will grant injunctions to prevent disclosure of confidential business information misappropriated by former employees or partners.</div><div class="case-lesson">⚖ India has no dedicated trade secrets law. Your only protection is a well-drafted NDA, confidentiality clause, and breach of contract action.</div></div></div>
+  </div>
+</section>
+
+<section class="startup-section reveal" id="startup">
+  <div class="startup-banner">
+    <div class="s-tag">Startup IP Toolkit</div>
+    <div class="sb-title">IP is Your<br>Competitive Weapon</div>
+    <p class="sb-desc">For startups, IP isn't just paperwork — it's how you build defensible value, attract investors, outlicense competitors, and create moats that money can't easily replicate.</p>
+  </div>
+
+  <div class="s-tag" style="margin-bottom:1rem">Patent vs Trade Secret</div>
+  <h2 style="margin-bottom:0.5rem">When to Choose What?</h2>
+  <p class="s-lead">One of the most consequential IP decisions a startup makes.</p>
+  <div class="matrix-wrap">
+    <div class="matrix-header"><div>Scenario</div><div>Patent</div><div>Trade Secret</div></div>
+    <div class="matrix-row"><div><div class="mr-scenario">Invention can be reverse-engineered</div><div class="mr-sub">Consumer product, drug formulation</div></div><div><span class="badge b-lime">✓ Patent</span></div><div><span class="badge b-muted">Useless — they'll copy it</span></div></div>
+    <div class="matrix-row"><div><div class="mr-scenario">Invention is a process / algorithm</div><div class="mr-sub">Coca-Cola formula, PageRank</div></div><div><span class="badge b-muted">Discloses method publicly</span></div><div><span class="badge b-cyan">✓ Secret</span></div></div>
+    <div class="matrix-row"><div><div class="mr-scenario">Need to show investors / partners</div><div class="mr-sub">Fundraising, licensing deals</div></div><div><span class="badge b-lime">✓ Patent</span></div><div><span class="badge b-muted">Hard to prove or license</span></div></div>
+    <div class="matrix-row"><div><div class="mr-scenario">Long-term competitive moat needed</div><div class="mr-sub">Operational efficiency formula</div></div><div><span class="badge b-muted">Expires in 20 years</span></div><div><span class="badge b-cyan">✓ Secret</span></div></div>
+    <div class="matrix-row"><div><div class="mr-scenario">Biotech / pharma core compound</div><div class="mr-sub">New drug molecule or formulation</div></div><div><span class="badge b-orange">✓ Both</span></div><div><span class="badge b-orange">✓ Both</span></div></div>
+    <div class="matrix-row"><div><div class="mr-scenario">Software / AI model</div><div class="mr-sub">Recommendation engine, ML model</div></div><div><span class="badge b-muted">Narrow patentability in India</span></div><div><span class="badge b-cyan">✓ Secret</span> <span style="font-size:0.72rem;color:var(--muted)">+ Copyright</span></div></div>
+  </div>
+
+  <div class="s-tag" style="margin-bottom:1rem">Licensing & Monetization</div>
+  <h2 style="margin-bottom:0.5rem">3 Ways to Make IP Pay</h2>
+  <p class="s-lead">Your IP registration is just the start.</p>
+  <div class="license-cards">
+    <div class="lc-card lc-1"><span class="lc-icon">🤝</span><div class="lc-name">Exclusive License</div><div class="lc-desc">One licensee gets sole rights in a territory or field. Higher upfront payments typical. You retain ownership but cannot license to others in that scope.</div><div class="lc-best">Best for: Premium partnerships, entering new markets through a single strong partner</div></div>
+    <div class="lc-card lc-2"><span class="lc-icon">📡</span><div class="lc-name">Non-Exclusive License</div><div class="lc-desc">License the same IP to multiple parties simultaneously. Each pays royalties. You retain full ownership and maximum commercial flexibility.</div><div class="lc-best">Best for: Software platforms, tech that scales across industries without cannibalisation</div></div>
+    <div class="lc-card lc-3"><span class="lc-icon">🔄</span><div class="lc-name">Cross-License</div><div class="lc-desc">Two companies grant each other access to their respective IP portfolios. Common in tech where products overlap patents held by multiple players.</div><div class="lc-best">Best for: Avoiding litigation, joint ventures, tech stack integration with partners</div></div>
+  </div>
+
+  <div class="s-tag" style="margin-bottom:1.2rem">Startup-Specific Mistakes</div>
+  <div class="sm-items">
+    <div class="sm-item"><div class="sm-e">🚀</div><div><div class="sm-title">Launching without an IP audit</div><div class="sm-desc">A cease-and-desist after launch is catastrophic. Check if your product name, logo, and core technology infringe existing IP before going public — not after raising funds.</div></div></div>
+    <div class="sm-item"><div class="sm-e">👥</div><div><div class="sm-title">No IP assignment from co-founders</div><div class="sm-desc">IP created before company incorporation may belong personally to the founder. If they leave or turn hostile, they could own your startup's core technology.</div></div></div>
+    <div class="sm-item"><div class="sm-e">💼</div><div><div class="sm-title">Undervaluing IP in investor negotiations</div><div class="sm-desc">IP is a bankable asset. Not quantifying your registered IP portfolio often leads to significant undervaluation in term sheets and due diligence.</div></div></div>
+    <div class="sm-item"><div class="sm-e">🌍</div><div><div class="sm-title">Only protecting IP in India while going global</div><div class="sm-desc">Indian filings protect you only within India. Competitors abroad can freely use your brand name or patented method with zero legal consequences.</div></div></div>
+    <div class="sm-item"><div class="sm-e">🔓</div><div><div class="sm-title">No IP assignment clause for contractors</div><div class="sm-desc">Work created by freelancers doesn't automatically belong to you. Under Indian copyright law, the creator owns it unless a written assignment exists.</div></div></div>
+  </div>
+
+  <div class="s-tag" style="margin-bottom:1rem">Real Startup Cases</div>
+  <div class="cases-grid" style="margin-top:1.5rem">
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Brand Strategy</span><span class="case-yr">India · FMCG</span></div><div class="case-body"><div class="case-name">The Amul Girl — Trademark + Trade Dress</div><div class="case-desc">GCMMF (Amul) protects the iconic Amul Girl through multi-layered IP: trademark for the name, copyright for the artistic work, trade dress for the blue-polka-dot identity.</div><div class="case-lesson">⚖ Register your mascot, packaging, and colour scheme. Each is a separate IP asset worth protecting.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">Compulsory License</span><span class="case-yr">India · 2012</span></div><div class="case-body"><div class="case-name">NATCO Pharma — Nexavar Compulsory License</div><div class="case-desc">India's first compulsory license let NATCO manufacture a generic cancer drug at 97% lower cost. A landmark case on public interest, patent limits, and access to medicine.</div><div class="case-lesson">⚖ Patents aren't absolute. Compulsory licensing under S.84 is available when patented tech isn't reasonably accessible.</div></div></div>
+    <div class="case-card"><div class="case-top"><span class="case-type-badge">SaaS Strategy</span><span class="case-yr">Startup Playbook</span></div><div class="case-body"><div class="case-name">Layered IP for a SaaS Startup</div><div class="case-desc">Best practice: register copyright on source code, keep ML models as trade secrets under NDA, trademark the product name and UI, file provisional patents for novel processes.</div><div class="case-lesson">⚖ One product should use 3–4 different IP types simultaneously. Layer them to cover every angle.</div></div></div>
+  </div>
+</section>
+
+<section class="faq-section reveal" id="faq">
+  <div class="s-tag">Step 06 — Ask</div>
+  <h2>Frequently Asked<br>Questions</h2>
+  <p class="s-lead">Real questions from students, creators, and founders — answered clearly.</p>
+  <div class="faq-grid">
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">Do I need to register copyright to own it? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">No. Copyright is <strong>automatic</strong> the moment you create an original work and fix it in material form — a document, a recording, a file. You don't need to register it for the right to exist. However, <strong>registration at copyright.gov.in (₹500)</strong> creates a public record, acts as prima facie evidence of ownership in court, and makes it much easier to file a lawsuit quickly. Think of registration as your receipt, not your right.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">What's the difference between ™ and ®? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner"><strong>™ (Unregistered)</strong> can be used by anyone claiming trademark rights — even before you file. It signals intent but gives no registered legal rights. <strong>® (Registered)</strong> can only be used after your trademark is officially registered by the Trade Marks Registry. Using ® on an unregistered mark is a criminal offence under S.107 of the Trade Marks Act, 1999. The safe rule: use ™ immediately after filing Form TM-A, switch to ® only after you receive the registration certificate.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">Can I patent a software or mobile app in India? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Not directly. Section 3(k) of the Patents Act, 1970 excludes <strong>computer programs "per se"</strong> from patentability. However, if your software is implemented on a <strong>specific hardware system</strong> or produces a <strong>technical effect</strong> beyond just running on a computer (e.g., a novel chip architecture, an embedded system process), it may qualify. The better strategy for software is layering: <strong>copyright</strong> the source code, keep the algorithm as a <strong>trade secret</strong> under NDA, and <strong>trademark</strong> the product name and UI.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">How long does trademark registration take in India? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">The full process takes <strong>18–24 months</strong> on average. After filing Form TM-A, the registry examines your application (30 days), you respond to objections (2 months), and the mark is published in the Trade Marks Journal for a <strong>4-month opposition window</strong>. If unopposed, a certificate is issued. You can use the <strong>™ symbol immediately</strong> after filing — you don't need to wait for registration to signal your claim. Expedited examination is not yet widely available in India.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">What is a "provisional patent" and should I file one? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">A provisional patent application (Form 1 + provisional spec) <strong>locks in your priority date</strong> immediately — without requiring a fully drafted specification. You get <strong>12 months</strong> to file the complete specification. It's ideal when your invention is still being developed, when you need to present to investors or partners under NDA, or before a conference or product launch. Cost: ₹1,600 (individual). If you miss the 12-month deadline, the application lapses and you lose that priority date permanently.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">Does a GI tag mean individual producers own the product name? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">No. A GI tag is a <strong>collective right</strong> — it belongs to the entire community of producers in that geographic region, not to any individual or company. An association or authority applies on behalf of all producers. Individual producers must separately register as <strong>"authorised users"</strong> (Form GI-2, ₹500) to commercially use the GI tag. Famous example: Darjeeling Tea was India's first GI (2004) — no single company owns it, but only certified producers in the Darjeeling hills can label their product "Darjeeling Tea."</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">Can my employer own the IP I create at work? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Yes — in many cases. Under <strong>Section 17 of the Copyright Act, 1957</strong>, if a literary, dramatic, artistic or musical work is created by an employee <strong>in the course of their employment</strong>, the employer is the first owner — unless there is a contract to the contrary. For patents, this is governed by contract law — most employment agreements include an IP assignment clause. If you create something <strong>outside working hours</strong> and unrelated to your job duties, it is generally yours. Always read your employment agreement carefully before starting a side project.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">What happens if someone copies my work and I have no registration? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">You can still sue — but it's harder. For <strong>copyright</strong>, registration isn't required to have rights, but courts will demand strong evidence of ownership and prior creation (timestamps, emails, git commits, metadata). For <strong>trademarks</strong>, unregistered marks can be protected through <strong>passing off action</strong> — you must prove: (1) goodwill in your mark, (2) misrepresentation by the defendant, (3) damage to your business. For patents, you have <strong>no rights without registration</strong> — there is no unregistered patent. Bottom line: always register before going public.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">Is "fair use" a defence to copyright infringement in India? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">India uses the term <strong>"fair dealing"</strong> (Section 52, Copyright Act, 1957) — not "fair use" (which is the American term). Fair dealing is a <strong>closed list</strong> of permitted acts: research, private study, criticism, review, reporting current events, judicial proceedings, and educational use. The landmark Delhi HC case <em>University of Oxford v. Rameshwari Photocopy Services (2016)</em> held that photocopying textbook excerpts for university courses qualifies as fair dealing. Unlike the US, India does not have a flexible four-factor fair use test — if your use isn't on the S.52 list, it's likely infringement.</div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <button class="faq-q">How do I protect my startup's trade secrets in India? <span class="faq-chevron">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">India has <strong>no dedicated trade secrets law</strong>. Protection flows entirely from <strong>contract law and breach of confidence</strong>. Your toolkit: (1) <strong>NDAs</strong> before sharing anything with investors, partners, or employees; (2) <strong>IP assignment + confidentiality clauses</strong> in every employment and contractor agreement; (3) <strong>access controls</strong> — limit who can see sensitive information; (4) <strong>documented secrecy measures</strong> — courts look for evidence that you treated it as a secret. If someone misappropriates your trade secret, you can sue for breach of contract, breach of confidence, and seek injunction + damages.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="ipsearch-section reveal" id="ipsearch">
+  <div class="s-tag">Check Availability</div>
+  <h2>Is Your Name or Idea<br>Already Taken?</h2>
+  <p class="s-lead">Search existing registered trademarks, patents, copyrights, and GI tags in India. Find out if your brand name, invention, or product is already protected by someone else.</p>
+
+  <div class="ipsearch-wrap">
+    <div class="ipsearch-box">
+
+      <div class="ipsearch-type-label">SELECT IP TYPE TO SEARCH</div>
+      <div class="ipsearch-type-row">
+        <button class="ip-type-chip chip-tm active" onclick="selectChip(this,'tm')">™ Trademark</button>
+        <button class="ip-type-chip chip-cr" onclick="selectChip(this,'cr')">© Copyright</button>
+        <button class="ip-type-chip chip-pt" onclick="selectChip(this,'pt')">⚙ Patent</button>
+        <button class="ip-type-chip chip-gi" onclick="selectChip(this,'gi')">📍 GI Tag</button>
+      </div>
+
+      <div class="ipsearch-row">
+        <input class="ipsearch-input" id="ipsearchInput" type="text"
+          placeholder="e.g. Zomato, Ayurvedic formula, Darjeeling silk…"
+          onkeydown="if(event.key==='Enter')runIPSearch()" />
+        <button class="ipsearch-btn" onclick="runIPSearch()">Search →</button>
+      </div>
+      <div class="ipsearch-hint">Search checks against registered Indian IP. For official verification visit <a href="https://ipindiaonline.gov.in" target="_blank" rel="noopener" style="color:var(--cyan);font-weight:600;">ipindiaonline.gov.in</a></div>
+
+      <!-- Loading state -->
+      <div class="ipsearch-loading" id="ipsearchLoading">
+        <div class="isl-dots">
+          <div class="isl-dot"></div><div class="isl-dot"></div><div class="isl-dot"></div>
+        </div>
+        <div class="isl-msg">Searching IP India registry…</div>
+      </div>
+
+      <!-- Results -->
+      <div class="ipsearch-results" id="ipsearchResults">
+        <div class="isr-header">
+          <div class="isr-query-label">Results for <strong id="isrQueryText"></strong> — <span id="isrTypeText"></span></div>
+          <div class="isr-verdict" id="isrVerdict"></div>
+        </div>
+        <div class="isr-cards" id="isrCards"></div>
+        <div class="isr-disclaimer">
+          ⚠️ These results are <strong>illustrative examples</strong> based on well-known registered Indian IP for educational purposes. For an official availability check, always search the <a href="https://ipindiaonline.gov.in" target="_blank" rel="noopener">IP India portal</a> (Trademark), <a href="https://ipindiapatents.gov.in" target="_blank" rel="noopener">Indian Patent Office</a>, or <a href="https://copyright.gov.in" target="_blank" rel="noopener">Copyright Office</a> directly before filing.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="consult-section reveal" id="consult">
+  <div class="s-tag">Step 07 — Get Help</div>
+  <h2>Free IP Consultation<br>for Creators & Startups</h2>
+  <p class="s-lead">Not sure which IP protection fits your idea? Submit your details and get a personalised guidance note — completely free.</p>
+
+  <div class="consult-wrap">
+    <!-- Left: value props -->
+    <div class="consult-left">
+      <div class="consult-badges">
+        <span class="consult-badge">✦ 100% Free</span>
+        <span class="consult-badge">⚡ Response within 48 hrs</span>
+        <span class="consult-badge">🔒 Confidential</span>
+      </div>
+      <p style="font-size:0.92rem;color:var(--muted);line-height:1.75;margin-bottom:0.5rem;">Whether you're a student with a side project, a creator protecting your art, or a startup founder building a defensible moat — tell us about your creation and we'll guide you to the right IP strategy.</p>
+      <div class="consult-points">
+        <div class="consult-point">
+          <div class="cp-icon">🎯</div>
+          <div>
+            <div class="cp-title">Identify the Right IP Type</div>
+            <div class="cp-desc">We'll assess whether your creation needs a trademark, patent, copyright, GI tag — or a combination.</div>
+          </div>
+        </div>
+        <div class="consult-point">
+          <div class="cp-icon">🗺️</div>
+          <div>
+            <div class="cp-title">Get a Filing Roadmap</div>
+            <div class="cp-desc">Receive a step-by-step filing checklist personalised to your IP type and budget.</div>
+          </div>
+        </div>
+        <div class="consult-point">
+          <div class="cp-icon">⚠️</div>
+          <div>
+            <div class="cp-title">Spot the Risk Gaps</div>
+            <div class="cp-desc">We'll flag common mistakes specific to your situation before they become costly problems.</div>
+          </div>
+        </div>
+        <div class="consult-point">
+          <div class="cp-icon">📋</div>
+          <div>
+            <div class="cp-title">No Legal Jargon</div>
+            <div class="cp-desc">Plain-language guidance you can act on immediately — no prior IP knowledge required.</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:2rem;padding:1.2rem 1.4rem;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--lime);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.4rem;">Disclaimer</div>
+        <div style="font-size:0.78rem;color:var(--muted);line-height:1.65;">This is an educational guidance service, not formal legal advice. For litigation or complex commercial matters, please consult a registered IP attorney.</div>
+      </div>
+    </div>
+
+    <!-- Right: form -->
+    <div class="consult-form-card" id="consultFormWrap">
+      <div id="consultForm">
+        <div class="cf-title">Tell Us About Your Creation</div>
+        <div class="cf-sub">Fill in the details below — takes under 2 minutes</div>
+
+        <div class="cf-row">
+          <div class="cf-group">
+            <label class="cf-label" for="cf-name">Your Name</label>
+            <input class="cf-input" id="cf-name" type="text" placeholder="e.g. Priya Sharma" />
+          </div>
+          <div class="cf-group">
+            <label class="cf-label" for="cf-email">Email Address</label>
+            <input class="cf-input" id="cf-email" type="email" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <div class="cf-row">
+          <div class="cf-group">
+            <label class="cf-label" for="cf-role">Your Role</label>
+            <select class="cf-select" id="cf-role">
+              <option value="">— Select —</option>
+              <option>Student / Researcher</option>
+              <option>Independent Creator</option>
+              <option>Startup Founder</option>
+              <option>MSME / Business Owner</option>
+              <option>Corporate / Enterprise</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="cf-group">
+            <label class="cf-label" for="cf-iptype">IP Type You Suspect</label>
+            <select class="cf-select" id="cf-iptype">
+              <option value="">— Not Sure —</option>
+              <option>Trademark (Brand / Logo)</option>
+              <option>Copyright (Art / Software / Music)</option>
+              <option>Patent (Invention / Process)</option>
+              <option>GI Tag (Regional Product)</option>
+              <option>Multiple / Not Sure</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cf-group">
+          <label class="cf-label" for="cf-desc">Describe Your Creation</label>
+          <textarea class="cf-textarea" id="cf-desc" placeholder="Briefly describe what you've made, invented, or branded — and what protection challenge you're facing. The more detail, the better we can guide you."></textarea>
+        </div>
+
+        <div class="cf-group">
+          <label class="cf-label" for="cf-urgency">How Soon Do You Need Guidance?</label>
+          <select class="cf-select" id="cf-urgency">
+            <option value="">— Select —</option>
+            <option>Within 1 week (urgent)</option>
+            <option>Within a month</option>
+            <option>Just exploring for now</option>
+          </select>
+        </div>
+
+        <button class="cf-submit" onclick="submitConsult()">
+          Send My Request → Free &amp; Confidential
+        </button>
+      </div>
+
+      <div class="cf-success" id="consultSuccess">
+        <div class="cf-success-icon">✅</div>
+        <div class="cf-success-title">Request Received!</div>
+        <p class="cf-success-msg">Thank you for reaching out. We've noted your details and will send a personalised IP guidance note to your email within 48 hours.<br><br>In the meantime, explore the <a href="#file" style="color:var(--lime);font-weight:600;">Step-by-Step Filing Guide</a> or take the <a href="#quiz" style="color:var(--lime);font-weight:600;">IP Quiz</a> to get started right now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-main">
+
+    <!-- Brand col -->
+    <div class="footer-brand-col">
+      <div class="footer-logo-big">IPR<span>Shield</span></div>
+      <p class="footer-note">India's comprehensive intellectual property resource for students, creators, and startups. Built as an ICE Creative Component for the IPR course at GNLU, Semester VI (Jan–May 2026).</p>
+      <div class="footer-student">
+        <div class="footer-student-name">Mohit <span>Mandya</span></div>
+        <div class="footer-student-reg">REG · 23BWL010 &nbsp;|&nbsp; GNLU · Semester VI &nbsp;|&nbsp; Faculty: Dr. Nidhi Buch</div>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="#quiz">Beginner's Guide</a></li>
+        <li><a href="#ipsearch">IP Availability Search</a></li>
+        <li><a href="#startup">Startup Toolkit</a></li>
+        <li><a href="#cases">Case Studies</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#compare">IP Comparison</a></li>
+        <li><a href="#file">Filing Guide</a></li>
+        <li><a href="#consult">Free Consultation</a></li>
+      </ul>
+    </div>
+
+    <!-- Resources -->
+    <div>
+      <div class="footer-col-title">Resources</div>
+      <ul class="footer-links">
+        <li><a href="https://ipindia.gov.in" target="_blank" rel="noopener">IP India Portal</a></li>
+        <li><a href="https://www.wipo.int/portal/en/" target="_blank" rel="noopener">WIPO Database</a></li>
+        <li><a href="https://ipindiapatents.gov.in" target="_blank" rel="noopener">Patent Search</a></li>
+        <li><a href="https://copyright.gov.in" target="_blank" rel="noopener">Copyright Office</a></li>
+        <li><a href="https://ipindiaonline.gov.in" target="_blank" rel="noopener">TM Registry</a></li>
+        <li><a href="https://www.wipo.int/madrid/en/" target="_blank" rel="noopener">Madrid Protocol</a></li>
+      </ul>
+    </div>
+
+    <!-- Legal -->
+    <div>
+      <div class="footer-col-title">Legal</div>
+      <ul class="footer-links">
+        <li><a href="#" onclick="return false;">Privacy Policy</a></li>
+        <li><a href="#" onclick="return false;">Terms of Use</a></li>
+        <li><a href="#" onclick="return false;">Disclaimer</a></li>
+        <li><a href="#" onclick="return false;">Contact Us</a></li>
+      </ul>
+      <div style="margin-top:1.5rem; padding:0.9rem 1rem; background:rgba(200,255,0,0.05); border:1px solid rgba(200,255,0,0.1); border-radius:10px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--lime); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.4rem;">Disclaimer</div>
+        <div style="font-size:0.75rem; color:var(--muted); line-height:1.6;">For educational purposes only. Not legal advice. Consult a qualified IP attorney for specific matters.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="footer-bottom-left">
+      © 2026 IPRShield · Gujarat National Law University · Gandhinagar, Gujarat<br>
+      All case references from the official course outline by Dr. Nidhi Buch.
+    </div>
+    <div class="footer-bottom-right">
+      Built by <span>Mohit Mandya</span> · 23BWL010<br>
+      ICE Creative Component · IPR · Jan–May 2026
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Starfield ──────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function initStars() {
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 4000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        a: Math.random(),
+        speed: Math.random() * 0.004 + 0.001,
+        phase: Math.random() * Math.PI * 2,
+        color: Math.random() > 0.92 ? (Math.random() > 0.5 ? '#c8ff00' : '#00e5ff') : '#ffffff'
+      });
+    }
+  }
+  function draw(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      const alpha = 0.3 + 0.7 * Math.abs(Math.sin(s.phase + t * s.speed));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.color === '#ffffff'
+        ? `rgba(255,255,255,${alpha * 0.8})`
+        : s.color === '#c8ff00'
+          ? `rgba(200,255,0,${alpha * 0.9})`
+          : `rgba(0,229,255,${alpha * 0.9})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();
+  initStars();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  requestAnimationFrame(draw);
+})();
+
+// ── Touch device cursor hide ────────────────────────────────
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  document.body.style.cursor = 'auto';
+  document.getElementById('cursor').style.display = 'none';
+  document.getElementById('cursor-ring').style.display = 'none';
+}
+
+// ── Custom cursor ───────────────────────────────────────────
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX - 6 + 'px';
+  cur.style.top = e.clientY - 6 + 'px';
+  ring.style.left = e.clientX - 18 + 'px';
+  ring.style.top = e.clientY - 18 + 'px';
+});
+
+// ── Mobile menu ─────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.querySelector('.nav-menu-btn');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && e.target !== btn) {
+    menu.classList.remove('open');
+  }
+});
+
+// ── Scroll reveal ───────────────────────────────────────────
+const obs = new IntersectionObserver(entries => entries.forEach(e => {
+  if (e.isIntersecting) e.target.classList.add('visible');
+}), { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+
+// ── Solar system card scroll ────────────────────────────────
+function scrollToCard(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.transition = 'box-shadow 0.4s';
+    el.style.boxShadow = '0 0 0 2px var(--lime), 0 0 40px rgba(200,255,0,0.2)';
+    setTimeout(() => { el.style.boxShadow = ''; }, 1400);
+  }
+}
+
+// ── FAQ accordion ───────────────────────────────────────────
+function toggleFaq(item) {
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// Quiz
+let qCur = 0, qAnswers = [];
+const qTitles = ['What have you created?','Is it documented?','Commercial intent?','Control needed?'];
+const qResults = [
+  { icon: '©', title: 'Copyright Protection', desc: 'Your work is automatically protected under the Copyright Act, 1957 from the moment of creation. Registration at copyright.gov.in (₹500) creates a public record and strengthens litigation standing.', pills: ['Copyright Act, 1957', 'Automatic Protection', 'Life + 60 Years', '₹500 to Register'] },
+  { icon: '⚙', title: 'Patent Protection', desc: 'Your invention may qualify for patent protection if it is novel, non-obvious, and industrially applicable. File a provisional application immediately to secure your priority date.', pills: ['Patents Act, 1970', 'File Provisional First', '20-Year Exclusivity', 'Indian Patent Office'] },
+  { icon: '™', title: 'Trademark Protection', desc: 'Your brand identity deserves trademark registration for exclusive commercial rights across India. Search the IP India portal first, then file Form TM-A online.', pills: ['Trade Marks Act, 1999', '10 Years Renewable', '₹4,500 Startup Fee', 'Register Before Launch'] },
+  { icon: '📍', title: 'Geographical Indication', desc: 'Products with quality, reputation or characteristics tied to a specific geographic region may qualify for GI registration — a collective right held by the entire producer community.', pills: ['GI Act, 1999', 'Collective Right', 'GI Registry Chennai', 'Renewable 10 Years'] },
+];
+
+function pickOpt(q, opt, el) {
+  document.querySelectorAll('#qopts' + q + ' .qopt').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  qAnswers[q] = opt;
+  document.getElementById('qnext').disabled = false;
+  document.getElementById('qhint').textContent = 'Option selected ✓';
+}
+
+function qNext() {
+  if (qCur < 3) {
+    document.getElementById('qb' + qCur).classList.remove('active');
+    document.getElementById('qb' + qCur).classList.add('done');
+    document.getElementById('qq' + qCur).classList.remove('active');
+    document.getElementById('qopts' + qCur).style.display = 'none';
+    qCur++;
+    document.getElementById('qb' + qCur).classList.add('active');
+    document.getElementById('qq' + qCur).classList.add('active');
+    document.getElementById('qopts' + qCur).style.display = 'flex';
+    document.getElementById('qnext').disabled = true;
+    document.getElementById('qnext').textContent = qCur === 3 ? 'See Result →' : 'Next →';
+    document.getElementById('q-count').textContent = '0' + (qCur + 1) + ' / 04';
+    document.getElementById('q-title').textContent = qTitles[qCur];
+    document.getElementById('qhint').textContent = 'Select an option above';
+  } else {
+    const r = qResults[qAnswers[0] !== undefined ? qAnswers[0] : 0];
+    document.querySelectorAll('.quiz-question, .quiz-opts').forEach(e => { e.style.display = 'none'; e.classList.remove('active'); });
+    document.querySelectorAll('.qbar').forEach(b => b.classList.add('done'));
+    document.getElementById('qfooter').style.display = 'none';
+    document.getElementById('qresetbar').style.display = 'flex';
+    document.getElementById('qr-icon').textContent = r.icon;
+    document.getElementById('qr-title').textContent = r.title;
+    document.getElementById('qr-desc').textContent = r.desc;
+    document.getElementById('qr-pills').innerHTML = r.pills.map((p, i) => '<span class="qr-pill ' + (i % 2 === 0 ? 'pill-lime' : 'pill-cyan') + '">' + p + '</span>').join('');
+    document.getElementById('qresult').classList.add('show');
+    document.getElementById('q-title').textContent = 'Your IP Type';
+    document.getElementById('q-count').textContent = '✓ Done';
+  }
+}
+
+function qReset() {
+  qCur = 0; qAnswers = [];
+  document.querySelectorAll('.qbar').forEach((b, i) => { b.className = 'qbar' + (i === 0 ? ' active' : ''); b.querySelector('.fill').style.width = '0'; });
+  document.querySelectorAll('.quiz-question').forEach((q, i) => { q.style.display = ''; q.classList.toggle('active', i === 0); });
+  document.querySelectorAll('.quiz-opts').forEach((o, i) => { o.style.display = i === 0 ? 'flex' : 'none'; o.querySelectorAll('.qopt').forEach(b => b.classList.remove('sel')); });
+  document.getElementById('qresult').classList.remove('show');
+  document.getElementById('qfooter').style.display = 'flex';
+  document.getElementById('qresetbar').style.display = 'none';
+  document.getElementById('qnext').disabled = true;
+  document.getElementById('qnext').textContent = 'Next →';
+  document.getElementById('q-title').textContent = qTitles[0];
+  document.getElementById('q-count').textContent = '01 / 04';
+  document.getElementById('qhint').textContent = 'Select an option above';
+}
+
+function switchFtab(id, btn) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.fsteps').forEach(f => f.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ft-' + id).classList.add('active');
+}
+
+// ── IP Availability Search ──────────────────────────────────
+let activeChip = 'tm';
+function selectChip(el, type) {
+  document.querySelectorAll('.ip-type-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeChip = type;
+  const placeholders = {
+    tm: 'e.g. Zomato, Amul, Tata, Swiggy…',
+    cr: 'e.g. Harry Potter, source code, artwork title…',
+    pt: 'e.g. pharmaceutical compound, tech process…',
+    gi: 'e.g. Darjeeling Tea, Basmati, Kanchipuram…'
+  };
+  document.getElementById('ipsearchInput').placeholder = placeholders[type];
+  document.getElementById('ipsearchResults').classList.remove('show');
+  document.getElementById('ipsearchLoading').classList.remove('show');
+}
+
+const ipDatabase = {
+  tm: [
+    { name: 'ZOMATO', owner: 'Zomato Ltd.', class: 'Class 43 — Food Services', regNo: '1234567', status: 'registered' },
+    { name: 'SWIGGY', owner: 'Bundl Technologies Pvt. Ltd.', class: 'Class 43 — Food Services', regNo: '2345678', status: 'registered' },
+    { name: 'AMUL', owner: 'GCMMF Ltd.', class: 'Class 29, 30 — Dairy & Food', regNo: '100123', status: 'registered' },
+    { name: 'TATA', owner: 'Tata Sons Pvt. Ltd.', class: 'Multiple classes — Well-Known Mark', regNo: '200001', status: 'registered' },
+    { name: 'BYJU\'S', owner: 'Think & Learn Pvt. Ltd.', class: 'Class 41 — Education', regNo: '3456789', status: 'registered' },
+    { name: 'PAYTM', owner: 'One97 Communications Ltd.', class: 'Class 36 — Financial Services', regNo: '4567890', status: 'registered' },
+    { name: 'FLIPKART', owner: 'Flipkart Internet Pvt. Ltd.', class: 'Class 35 — Retail', regNo: '5678901', status: 'registered' },
+    { name: 'OLA', owner: 'ANI Technologies Pvt. Ltd.', class: 'Class 39 — Transport', regNo: '6789012', status: 'registered' },
+    { name: 'NYKAA', owner: 'FSN E-Commerce Ventures Ltd.', class: 'Class 3 — Cosmetics', regNo: '7890123', status: 'registered' },
+    { name: 'MYNTRA', owner: 'Myntra Designs Pvt. Ltd.', class: 'Class 25, 35 — Apparel & Retail', regNo: '8901234', status: 'registered' },
+    { name: 'ZEPTO', owner: 'Kiranakart Technologies Pvt. Ltd.', class: 'Class 35 — Grocery Delivery', regNo: '9012345', status: 'registered' },
+    { name: 'RAPIDO', owner: 'Roppen Transportation Services', class: 'Class 39 — Transport', regNo: '9123456', status: 'registered' },
+  ],
+  pt: [
+    { name: 'GLEEVEC (Imatinib modified form)', owner: 'Novartis AG', class: 'Pharmaceutical — Drug Compound', regNo: 'IN/PCT/2001/01', status: 'registered' },
+    { name: 'Wireless Data Transmission Protocol', owner: 'Qualcomm Inc.', class: 'Electronics — Communication', regNo: 'IN202041012345', status: 'registered' },
+    { name: 'Bt Cotton Bollgard II', owner: 'Monsanto Technology LLC', class: 'Agriculture — Biotech', regNo: 'IN214272', status: 'registered' },
+    { name: 'Lipitor (Atorvastatin) Process', owner: 'Pfizer Inc.', class: 'Pharmaceutical — Process', regNo: 'IN195330', status: 'registered' },
+    { name: 'Solar Photovoltaic Cell Coating', owner: 'CSIR-CECRI India', class: 'Energy — Renewable', regNo: 'IN335621', status: 'registered' },
+    { name: 'Ayurvedic Neem Biopesticide', owner: 'W.R. Grace & Co.', class: 'Agriculture — Pesticide', regNo: 'EP0436257', status: 'similar' },
+  ],
+  cr: [
+    { name: 'Harry Potter series', owner: 'J.K. Rowling / Bloomsbury', class: 'Literary Work', regNo: '—', status: 'registered' },
+    { name: 'Taare Zameen Par (film)', owner: 'Aamir Khan Productions', class: 'Cinematographic Work', regNo: 'SW/2007/1234', status: 'registered' },
+    { name: 'Lagaan (film)', owner: 'Aamir Khan Productions / BBC Films', class: 'Cinematographic Work', regNo: 'SW/2001/0987', status: 'registered' },
+    { name: 'Linux Kernel (source code)', owner: 'Linus Torvalds / Community', class: 'Literary Work — Software', regNo: '—', status: 'registered' },
+    { name: 'Amul Girl illustration', owner: 'GCMMF / daCunha Communications', class: 'Artistic Work', regNo: 'A/2001/456', status: 'registered' },
+  ],
+  gi: [
+    { name: 'Darjeeling Tea', owner: 'Tea Board of India', class: 'Agricultural — Tea', regNo: 'GI/1/2004', status: 'registered' },
+    { name: 'Basmati Rice', owner: 'Agricultural & Processed Food Exports Dev. Authority', class: 'Agricultural — Rice', regNo: 'GI/56/2016', status: 'registered' },
+    { name: 'Kanchipuram Silk', owner: 'Silk Weavers\' Assoc., Kanchipuram', class: 'Handicraft — Textile', regNo: 'GI/2/2005', status: 'registered' },
+    { name: 'Kolhapuri Chappal', owner: 'Kolhapuri Chappal Mfrs. Assoc.', class: 'Handicraft — Footwear', regNo: 'GI/14/2019', status: 'registered' },
+    { name: 'Alphonso Mango', owner: 'Ratnagiri / Sindhudurg Producers', class: 'Agricultural — Fruit', regNo: 'GI/120/2018', status: 'registered' },
+    { name: 'Mysore Silk', owner: 'Karnataka Silk Industries Corp.', class: 'Handicraft — Textile', regNo: 'GI/3/2005', status: 'registered' },
+    { name: 'Bikaneri Bhujia', owner: 'Bhujia Manufacturers\' Assoc., Bikaner', class: 'Food Product', regNo: 'GI/69/2010', status: 'registered' },
+  ]
+};
+
+const typeLabels = { tm: 'Trademark', cr: 'Copyright', pt: 'Patent', gi: 'GI Tag' };
+const typeIcons = { tm: '™', cr: '©', pt: '⚙', gi: '📍' };
+
+function runIPSearch() {
+  const query = document.getElementById('ipsearchInput').value.trim();
+  if (!query) { document.getElementById('ipsearchInput').focus(); return; }
+
+  document.getElementById('ipsearchResults').classList.remove('show');
+  document.getElementById('ipsearchLoading').classList.add('show');
+
+  setTimeout(() => {
+    document.getElementById('ipsearchLoading').classList.remove('show');
+    showIPResults(query, activeChip);
+  }, 900);
+}
+
+function showIPResults(query, type) {
+  const q = query.toLowerCase();
+  const db = ipDatabase[type] || [];
+  const matches = db.filter(item =>
+    item.name.toLowerCase().includes(q) ||
+    q.split(' ').some(word => word.length > 2 && item.name.toLowerCase().includes(word))
+  );
+
+  const resultsEl = document.getElementById('ipsearchResults');
+  document.getElementById('isrQueryText').textContent = '"' + query + '"';
+  document.getElementById('isrTypeText').textContent = typeLabels[type];
+
+  const verdictEl = document.getElementById('isrVerdict');
+  const cardsEl = document.getElementById('isrCards');
+
+  if (matches.length === 0) {
+    verdictEl.className = 'isr-verdict isr-verdict-clear';
+    verdictEl.textContent = '✓ Likely Available';
+    cardsEl.innerHTML = `
+      <div class="isr-empty">
+        <div class="isr-empty-icon">✅</div>
+        <div class="isr-empty-title">No conflicts found in our sample database</div>
+        <div class="isr-empty-msg">No registered ${typeLabels[type]} closely matching <strong>"${query}"</strong> was found in our reference set. This is a good sign — but always run an official search on the <a href="https://ipindiaonline.gov.in" target="_blank" rel="noopener" style="color:var(--cyan);font-weight:600;">IP India portal</a> before filing to confirm availability.</div>
+      </div>`;
+  } else {
+    const hasExact = matches.some(m => m.name.toLowerCase() === q);
+    if (hasExact) {
+      verdictEl.className = 'isr-verdict isr-verdict-taken';
+      verdictEl.textContent = '✗ Name Taken';
+    } else {
+      verdictEl.className = 'isr-verdict isr-verdict-partial';
+      verdictEl.textContent = '⚠ Similar Exists';
+    }
+    cardsEl.innerHTML = matches.map(item => `
+      <div class="isr-card">
+        <div class="isr-icon isr-icon-${type}">${typeIcons[type]}</div>
+        <div>
+          <div class="isr-name">${item.name}</div>
+          <div class="isr-meta">${item.owner} &nbsp;·&nbsp; ${item.class} &nbsp;·&nbsp; Reg: ${item.regNo}</div>
+        </div>
+        <div class="isr-status ${item.status === 'registered' ? 'isr-status-registered' : 'isr-status-similar'}">
+          ${item.status === 'registered' ? '● Registered' : '◐ Similar'}
+        </div>
+      </div>`).join('');
+  }
+
+  resultsEl.classList.add('show');
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Free Consultation submit ────────────────────────────────
+function submitConsult() {
+  const name = document.getElementById('cf-name').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const desc = document.getElementById('cf-desc').value.trim();
+  if (!name || !email || !desc) {
+    const fields = [];
+    if (!name) fields.push('Name');
+    if (!email) fields.push('Email');
+    if (!desc) fields.push('Description');
+    alert('Please fill in: ' + fields.join(', '));
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+  document.getElementById('consultForm').style.display = 'none';
+  document.getElementById('consultSuccess').classList.add('show');
+  document.getElementById('consultFormWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+</body>
+</html>
